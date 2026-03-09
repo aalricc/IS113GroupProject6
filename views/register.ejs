@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <% if (isLoggedIn) { %>
+    <div class="topnav">
+      <a class="active" href="#">Home</a>
+      <a href="#">User Account</a>
+      <a href="#">Watchlist</a>
+      <a href="#">Logout</a>
+    </div>
+    <% }  else { %>
+       <div class="topnav">
+          <a class="active" href="#">Home</a>
+            <a href="#">Watchlist</a>
+            <a href="/login-page">Login</a>
+            <a href="/register-page">Register</a>
+        </div>
+    <% } %>
+
+    <h1>Register Page</h1>
+
+    <form action="/register-attempt" method="post">
+        <b><label for="usernameRegister">Username</label></b><br/>
+        <input type="text" id="usernameRegister" name="usernameRegister">
+        <br/><br/>
+
+        <b><label for="emailRegister">Email</label></b><br/>
+        <input type="text" id="emailRegister" name="emailRegister">
+        <br/><br/>
+
+        <b><label for="passwordRegister">Password</label></b><br/>
+        <input type="text" id="passwordRegister" name="passwordRegister">
+        <br/><br/>
+
+        <b><label for="confirmPasswordRegister">Confirm Password</label></b><br/>
+        <input type="text" id="confirmPasswordRegister" name="confirmPasswordRegister">
+        <br/><br/>
+
+        <button type="submit">Register</button><br/><br/>
+
+        Already have an account? <a href="/login-page">Login here !</a>
+    </form>
+
+</body>
+</html>

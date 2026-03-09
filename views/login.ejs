@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <% if (isLoggedIn === true) { %>
+    <div class="topnav">
+      <a class="active" href="#">Home</a>
+      <a href="#">User Account</a>
+      <a href="#">Watchlist</a>
+      <a href="#">Logout</a>
+    </div>
+    <% }  else { %>
+       <div class="topnav">
+          <a class="active" href="#">Home</a>
+            <a href="#">Watchlist</a>
+            <a href="/login-page">Login</a>
+            <a href="/register-page">Register</a>
+        </div>
+    <% } %>
+
+    <h1>Login Page</h1>
+
+    <% if (falseLogin === false) { %>
+        <h2>Invalid username or password. Register if you have not !</h2>
+    <% } %>
+
+    <form action="/login-attempt" method="post">
+        <b><label for="usernameEntered">Username</label></b><br/>
+        <input id="usernameEntered" type="text" name="usernameEntered">
+        <br/><br/>
+
+        <b><label for="passwordEntered">Password</label></b><br/>
+        <input id="passwordEntered" type="text" name="passwordEntered">
+        <br/><br/>
+
+        <button type="submit">Login</button><br/>
+
+        Dont have an account? <a href="/register-page">Click Here to Register Today !</a>
+    </form>
+
+    
+</body>
+</html>
