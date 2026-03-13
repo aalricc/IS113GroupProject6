@@ -1,9 +1,4 @@
 {
-<<<<<<< HEAD
-  "dependencies": {
-    "ejs": "^5.0.1",
-    "express": "^5.2.1"
-=======
   "name": "is113groupproject6",
   "version": "1.0.0",
   "description": "",
@@ -28,6 +23,5 @@
     "ejs": "^5.0.1",
     "express": "^5.2.1",
     "nodemon": "^3.1.14"
->>>>>>> origin/alric
   }
 }

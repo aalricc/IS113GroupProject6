@@ -89,6 +89,12 @@ app.post("/register-attempt", (req, res)=>{
     }
 })
 
+
+app.get("/movies_review",(req,res) => {
+    res.render("moviereviews",{
+
+    })
+})
 const hostname = "localhost";
 const port = 8000;
 
