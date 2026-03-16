@@ -29,10 +29,6 @@ let movies = [
     {title: "The Dark Knight", review: "8.3", date: "3/9/2026", isWatched:"No"}
 ]
 
-app.get("/", (req, res) => {
-    res.render("home")
-})
-
 app.get("/watchlist", (req, res) => {
     res.render("watchlist", {movies})
 })
