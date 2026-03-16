@@ -1,0 +1,12 @@
+3 schemas
+userSchema
+watchlistSchema
+reviewSchema
+
+Watchlist attributes:
+UserID (Primary key)
+Movies: []
+
+Functions:
+Create watch list - add  movie to an object
+Remove movie from watchlist
