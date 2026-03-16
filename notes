@@ -8,5 +8,5 @@ UserID (Primary key)
 Movies: []
 
 Functions:
-Create watch list - add  movie to an object
+Create watch list 
 Remove movie from watchlist
