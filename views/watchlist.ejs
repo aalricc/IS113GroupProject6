@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+        <div class="topnav">
+      <a class="active" href="#">Home</a>
+      <a href="#">User Account</a>
+      <a href="#">Watchlist</a>
+      <a href="#">Logout</a>
+    </div>
+    <h1>My Watchlist</h1>
+    <table border="1">
+        <tr>
+            <th>Movie</th>
+            <th>Rating</th>
+            <th>Added</th>
+            <th>Watched</th>
+            <th>Actions</th>
+        </tr>
+        <% for (let movie of movies) { %>
+        <tr>
+            <td><a href="#"><%=movie.title %></a></td>
+            <td><%=movie.review %></td>
+            <td><%=movie.date %></td>
+            <td><%=movie.isWatched %></td>
+            <td><button type="button">Remove</button></td>
+        </tr>
+        <% } %>
+    </table>
+    <br>
+    <button type="button">Browse Movies</button>    
+</body>
+</html>

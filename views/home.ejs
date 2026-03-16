@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home</title>
+</head>
+<body>
+  <div class="topnav">
+    <a class="active" href="/">Home</a>
+    <a href="#">User Account</a>
+    <a href="/watchlist">Watchlist</a>
+    <a href="#">Logout</a>
+  </div>
+
+  <h1>Home</h1>
+  <h2>Popular Movies</h2>
+
+  <div class="grid">
+    <% for (let movie of movies) { %>
+    <div class="card">
+      <img src="<%= movie.poster %>" alt="<%= movie.title %>" loading="lazy" />
+      <div class="card-info">
+        <div class="card-title"><%= movie.title %></div>
+        <div class="card-meta">
+          <span class="star">★</span> <%= movie.rating.toFixed(1) %>
+          &nbsp;·&nbsp; <%= movie.releaseDate ? movie.releaseDate.slice(0,4) : "N/A" %>
+        </div>
+      </div>
+    </div>
+    <% } %>
+  </div>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movie</title>
+  </head>
+  <body>
+    <div class="topnav">
+      <a class="active" href="#">Home</a>
+      <a href="#">User Account</a>
+      <a href="#">Watchlist</a>
+      <a href="#">Logout</a>
+    </div>
+    <img src="batman.jpg" alt="" />batman picture here
+    <br />
+    <h2>The Dark Knight (MOVIE NAME HERE)</h2>
+    <p>Genres: blah blah blah</p>
+    <br />
+    <p>[BRIEF DESCRIPTION]</p>
+    <br />
+    <h2>Reviews</h2>
+    <form action="/movies_review" , method="post">
+      <p>Your rating (1-10)</p>
+      <br />
+      <input type="text" name="rating" id="rating" />
+      <p>Comment(optional)</p>
+
+      <textarea name="description" id="description" lines="10"></textarea>
+    </form>
+  </body>
+</html>
