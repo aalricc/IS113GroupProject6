@@ -8,17 +8,17 @@
 <body>
     <% if (isLoggedIn) { %>
     <div class="topnav">
-      <a class="active" href="#">Home</a>
-      <a href="#">User Account</a>
-      <a href="#">Watchlist</a>
-      <a href="#">Logout</a>
+      <a class="active" href="../routes/home-routes.js">Home</a>
+      <a href="../routes/login-routes.js">User Account</a>
+      <a href="../routes/watchlist-routes.js">Watchlist</a>
+      <a href="../routes/home-routes.js">Logout</a>
     </div>
     <% }  else { %>
        <div class="topnav">
-          <a class="active" href="#">Home</a>
-            <a href="#">Watchlist</a>
-            <a href="/login-page">Login</a>
-            <a href="/register-page">Register</a>
+          <a class="active" href="../routes/home-routes.js">Home</a>
+            <a href="../routes/watchlist-routes.js">Watchlist</a>
+            <a href="../routes/login-routes.js">Login</a>
+            <a href="../routes/register-routes.js">Register</a>
         </div>
     <% } %>
 
