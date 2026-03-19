@@ -5,6 +5,10 @@ const { getPopularMovies } = require("./data/movies");
 app.set("view engine", "ejs");
 app.use(express.urlencoded({extended: true}));
 
+// Routes
+const moviereviewsRoutes = require('./routes/moviereviews-routes');
+app.use('/', moviereviewsRoutes);
+
 //TMDB API
 const TMDB_API_KEY = "1a5d529ccb58f5db5d1c537364032cd0"; 
 
@@ -146,11 +150,6 @@ app.post("/register-attempt", (req, res)=>{
 })
 
 
-app.get("/movies_review",(req,res) => {
-    res.render("moviereviews",{
-
-    })
-})
 const hostname = "localhost";
 const port = 8000;
 

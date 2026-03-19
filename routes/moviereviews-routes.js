@@ -5,8 +5,8 @@ const moviereviewsController = require("./../controllers/moviereviews-controller
 
 router = express.Router();
 
-router.get("/movie-reviews", moviereviewsController.someFunction);
+router.get("/movie-reviews", moviereviewsController.moviereviews);
 
-router.post("/movie-reivew")
+router.post("/movie-reviews", moviereviewsController.postReview);
 
 module.exports = router;
