@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const { getPopularMovies } = require("./data/movies");
+const { connectDB } = require("./data/mongo");
 app.set("view engine", "ejs");
 app.use(express.urlencoded({extended: true}));
 
@@ -11,19 +12,15 @@ app.use('/', moviereviewsRoutes);
 
 //TMDB API
 const TMDB_API_KEY = "1a5d529ccb58f5db5d1c537364032cd0"; 
+connectDB()
+  .then(() => {
+    console.log("MongoDB connected");
+  })
+  .catch((err) => {
+    console.log("MongoDB connection error:", err);
+  });
 
-async function loadPopularMovies() {
-  const url = `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
-  const response = await fetch(url);
-  const data = await response.json();
-  return data.results.map(movie => ({
-    title:       movie.title,
-    rating:      movie.vote_average,
-    releaseDate: movie.release_date,
-    poster:      `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
-    overview:    movie.overview,
-  }));
-}
+
 
 //Routes
 let userDatabase = [{username: "dylan", password: "123456"}];
@@ -151,8 +148,7 @@ app.post("/register-attempt", (req, res)=>{
 
 
 const hostname = "localhost";
-const port = 8000;
-
+const port = 3000;
 app.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });
