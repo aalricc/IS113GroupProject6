@@ -15,21 +15,6 @@ connectDB()
   });
 
 
-//TMDB API
-const TMDB_API_KEY = "1a5d529ccb58f5db5d1c537364032cd0"; 
-
-async function loadPopularMovies() {
-  const url = `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
-  const response = await fetch(url);
-  const data = await response.json();
-  return data.results.map(movie => ({
-    title:       movie.title,
-    rating:      movie.vote_average,
-    releaseDate: movie.release_date,
-    poster:      `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
-    overview:    movie.overview,
-  }));
-}
 
 //Routes
 let userDatabase = [{username: "dylan", password: "123456"}];
