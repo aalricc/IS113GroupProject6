@@ -2,7 +2,7 @@ const express = require("express");
 
 const loginController = require("./../controllers/login-controller");
 
-router = express.Router();
+const router = express.Router();
 
 router.get("/login", loginController.someFunction);
 
