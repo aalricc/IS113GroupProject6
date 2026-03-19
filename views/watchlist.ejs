@@ -14,6 +14,9 @@
       <a href="../routes/home-routes.js">Logout</a>
     </div>
     <h1>My Watchlist</h1>
+    <% if (watchList.length === 0) { %>
+    <h2>No movies added to watchlist yet.</h2>
+    <% } else { %>
     <table border="1">
         <tr>
             <th>Movie</th>
@@ -22,7 +25,6 @@
             <th>Watched</th>
             <th>Actions</th>
         </tr>
-        
         <% for (let movie of movies) { %>
         <tr>
             <td><a href="#"><%=movie.title %></a></td>
@@ -54,7 +56,7 @@
             </td>
         </tr>
         <% } %>
-         
+        <% } %>
     </table>
     <br>
     <a href="#"><button type="button">Browse Movies</button></a>  
