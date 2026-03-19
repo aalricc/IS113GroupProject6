@@ -22,6 +22,16 @@ async function loadPopularMovies() {
 }
 
 //Routes
+const moviereviewsRoutes = require("./routes/moviereviews-routes")
+app.use("/", moviereviewsRoutes);
+const homeRoutes = require("./routes/home-routes")
+app.use("/", homeRoutes);
+const loginRoutes = require("./routes/login-routes")
+app.use("/", loginRoutes);
+const watchlistRoutes = require("./routes/watchlist-routes")
+app.use("/", watchlistRoutes);
+const registerRoutes = require("./routes/register-routes")
+app.use("/", registerRoutes);
 let userDatabase = [{username: "dylan", password: "123456"}];
 let movies = [
     {title: "The Shawshank Redemption", review: "9.3", date:"3/9/2026", isWatched:"Yes"},
