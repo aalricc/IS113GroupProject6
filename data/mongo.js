@@ -37,12 +37,12 @@ async function readOneFromDB(Model, query = {}) {
 
 async function updateInDB(Model, filter, updatedData) {
     await connectDB();
-    return await Model.findOneAndUpdate(filter, updatedData, { new: true });
+    return await Model.updateOne(filter, updatedData);
 }
 
 async function deleteFromDB(Model, filter) {
     await connectDB();
-    return await Model.findOneAndDelete(filter);
+    return await Model.deleteOne(filter);
 }
 const userSchema = new mongoose.Schema({
     username: String,
