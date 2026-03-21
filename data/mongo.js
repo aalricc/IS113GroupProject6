@@ -73,6 +73,7 @@ module.exports = {
     MONGO_URI,
     connectDB,
     disconnectDB,
+    pushToDB,
     User,
     Review,
     Watchlist

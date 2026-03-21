@@ -45,9 +45,9 @@
         <% if (movieReviews && movieReviews.length > 0) { %>
             <% movieReviews.forEach(function(review) { %>
                 <div class="review-card">
-                    <span class="rating-badge">Score: <%= review.rating %>/10</span>
-                    <strong> - <%= review.username || 'Anonymous' %></strong>
-                    <p><%= review.reviewContent %></p>
+                    <span class="rating-badge">Score: <%= movieReviews.rating %>/10</span>
+                    <strong> - <%= movieReviews.username || 'Anonymous' %></strong>
+                    <p><%= movieReviews.reviewContent %></p>
                 </div>
             <% }); %>
         <% } else { %>
@@ -70,6 +70,24 @@
         
         <button type="submit" style="padding: 10px 20px; cursor: pointer;">Send Review</button>
     </form>
+
+  <h2>User Reviews</h2>
+
+  <% if (movieReviews.length > 0) { %>
+    <% movieReviews.forEach(function(r) { %>
+      <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
+        <p><strong><%= r.username %></strong> rated it <strong><%= r.rating %>/10</strong></p>
+        <p><%= r.reviewContent %></p>
+        <form action="/delete-review/<%= r._id %>/<%= movieData.id %>" method="POST" style="display:inline;">
+                <button type="submit" style="color: red; cursor: pointer;">
+                    Delete Review
+                </button>
+            </form>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <p>No reviews yet. Be the first to post one!</p>
+  <% } %>
 
 </body>
 </html>
