@@ -1,14 +1,18 @@
 const  {getPopularMovies,searchMovies,getMovieById}  = require("../data/movies");
+const {Review} = require("../data/mongo")
 
-
-exports.moviereviews = (req,res) => {
+exports.moviereviews = async (req,res) => {
     const id = req.params.id
-    const movieID = getMovieById()
+    const movieData = await getMovieById(id) // This gets data from the id that is in the query
+    const movieReviews = await Review.find({ movieId: id }) 
     res.render("moviereviews",{
+        movieData,
+        movieReviews
     })
 }
 
-exports.postReview = (req, res) => {
+exports.postReview = async (req, res) => {
+    const id = req.params.id
     const rating = req.body.rating;
     const description = req.body.description;
     
