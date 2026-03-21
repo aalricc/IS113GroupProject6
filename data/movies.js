@@ -3,21 +3,25 @@ const BASE_URL = "https://api.themoviedb.org/3";
 
 let cachedMovies = null; 
 
+function normaliseMovie(movie) {
+  return {
+    id:          movie.id,
+    title:       movie.title,
+    rating:      movie.vote_average,
+    releaseDate: movie.release_date,
+    poster:      movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
+    overview:    movie.overview,
+    genres:      movie.genre_ids || (movie.genres ? movie.genres.map(genre => genre.id) : []),
+  };
+}
+
 async function fetchAndCache() {
   if (cachedMovies) return cachedMovies;
 
   const response = await fetch(`${BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
   const data = await response.json();
 
-  cachedMovies = data.results.map(movie => ({
-    id:          movie.id,
-    title:       movie.title,
-    rating:      movie.vote_average,
-    releaseDate: movie.release_date,
-    poster:      `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
-    overview:    movie.overview,
-    genres:      movie.genre_ids,
-  }));
+  cachedMovies = data.results.map(movie => normaliseMovie(movie));
 
   return cachedMovies;
 }
@@ -35,21 +39,15 @@ async function getMovieById(id) {
 
   // if not in cache 
   const response = await fetch(`${BASE_URL}/movie/${id}?api_key=${TMDB_API_KEY}&language=en-US`);
-  return await response.json();
+  const movie = await response.json();
+  return normaliseMovie(movie);
 }
 
 // for search
 async function searchMovies(query) {
   const response = await fetch(`${BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`);
   const data = await response.json();
-  return data.results.map(movie => ({
-    id:          movie.id,
-    title:       movie.title,
-    rating:      movie.vote_average,
-    releaseDate: movie.release_date,
-    poster:      movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
-    overview:    movie.overview,
-  }));
+  return data.results.map(movie => normaliseMovie(movie));
 }
 
 module.exports = { getPopularMovies, getMovieById, searchMovies };
