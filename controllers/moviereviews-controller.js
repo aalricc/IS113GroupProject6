@@ -2,6 +2,7 @@ const  {getPopularMovies,searchMovies,getMovieById}  = require("../data/movies")
 
 
 exports.moviereviews = (req,res) => {
+    const id = req.params.id
     const movieID = getMovieById()
     res.render("moviereviews",{
     })
