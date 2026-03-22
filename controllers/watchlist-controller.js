@@ -10,7 +10,7 @@ exports.showWatchlist = async (req, res) => {
   try {
     let watchList = await Movie.findWatchlistByID(user_id); // Go through the DB and find watchlist according to user_id
     // console.log(watchList);
-    res.render("watchlist", { watchList }); // Render the EJS form view and pass the posts
+    res.render("watchlist", { watchList, msg: "" }); // Render the EJS form view and pass the posts
   } catch (error) {
     console.error(error);
     res.send("Error reading database"); // Send error message if fetching fails
@@ -75,4 +75,51 @@ exports.markUnwatched = async (req,  res) => {
     }
 
     res.redirect("/watchlist")
+}
+
+exports.createWatchlist = async (req, res) => {
+    let user_id = "u123";
+    const name = req.body.movie;
+    const rating = req.body.rating;
+    const id = req.body.id
+
+    let newMovie = {
+        movieName: name,
+        rating: rating,
+        hasWatched: false,
+        userId: user_id,
+        movieId: id
+    }
+
+    try{
+
+        let movie = await Movie.findWatchlistbyIDandName(user_id, name)
+        console.log('Testing function')
+        console.log(movie)
+
+        if(movie) {
+            let msg = "Movie already exists in the watchlist"
+            let watchList = await Movie.findWatchlistByID(user_id)
+            res.render("watchlist", {msg, watchList})
+
+        }
+
+        else {
+            let result = await Movie.createWatchlist(newMovie);
+            // console.log(result)
+            console.log("Successfully added movie to watchlist")
+            let msg = "Movie added to watchlist."
+            let watchList = await Movie.findWatchlistByID(user_id)
+
+            res.render("watchlist", {msg, watchList})
+
+        }
+
+    }
+
+    catch(error) {
+        console.log("Error adding movie to watchlist")
+    }
+
+
 }

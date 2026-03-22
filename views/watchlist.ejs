@@ -8,12 +8,15 @@
 <body>
         <div class="topnav">
             
-      <a class="active" href="../routes/home-routes.js">Home</a>
+      <a class="active" href="/">Home</a>
       <a href="../routes/login-routes.js">User Account</a>
-      <a href="../routes/watchlist-routes.js">Watchlist</a>
+      <a href="/watchlist">Watchlist</a>
       <a href="../routes/home-routes.js">Logout</a>
     </div>
     <h1>My Watchlist</h1>
+    <% if (msg) { %>
+    <p><%= msg %></p>
+    <% } %>
     <% if (watchList.length === 0) { %>
     <h2>No movies added to watchlist yet.</h2>
     <% } else { %>
@@ -27,9 +30,9 @@
         </tr>
         <% for (let movie of watchList) { %>
         <tr>
-            <td><a href="#"><%=movie.movieName %></a></td>
+            <td><a href="/movie-reviews/<%=movie.movieId %>"><%=movie.movieName %></a></td>
             <td>★ <%=movie.rating %></td>
-            <td><%=movie.dateAdded %></td>
+            <td><%=movie.dateAdded.toISOString().split('T')[0]%></td>
             <!-- If movie has not been watched, don't display a tick symbol -->
             <% if (!movie.hasWatched) { %>
             <td>No</td>

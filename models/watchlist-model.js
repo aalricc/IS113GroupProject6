@@ -14,12 +14,15 @@ const watchlistSchema = new mongoose.Schema({
         required: true
     },
     dateAdded: {
-        type: String,
-        required: true
+        type: Date,
+        default: Date.now
     },
     hasWatched: {
         type: Boolean,
         default: false
+    },
+    movieId: {
+        type: Number
     }
     
 });
@@ -51,4 +54,8 @@ exports.markAsWatched = function(userId, movieName) {
 
 exports.markAsUnwatched = function(userId, movieName) {
     return Watchlist.updateOne({userId: userId, movieName: movieName}, {hasWatched: false}) 
+}
+
+exports.createWatchlist = function(newMovie) {
+    return Watchlist.create(newMovie)
 }
