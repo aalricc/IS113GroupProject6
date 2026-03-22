@@ -9,6 +9,12 @@ app.use(express.urlencoded({extended: true}));
 const watchListRoutes = require('./routes/watchlist-routes');
 
 
+// Routes
+const moviereviewsRoutes = require('./routes/moviereviews-routes');
+app.use('/', moviereviewsRoutes);
+
+//TMDB API
+const TMDB_API_KEY = "1a5d529ccb58f5db5d1c537364032cd0"; 
 connectDB()
   .then(() => {
     console.log("MongoDB connected");
