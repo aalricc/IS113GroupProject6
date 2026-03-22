@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Email</title>
+</head>
+<body>
+    <h1>Update Email</h1>
+
+    <p>Current email: <%= user.email %></p>
+
+    <% if (errors && errors.length > 0) { %>
+        <ul>
+            <% for (let error of errors) { %>
+                <li><%= error %></li>
+            <% } %>
+        </ul>
+    <% } %>
+
+    <% if (success) { %>
+        <p><%= success %></p>
+    <% } %>
+
+    <form action="/account/update-email" method="POST">
+        <label for="email">New Email:</label>
+        <input
+            type="email"
+            id="email"
+            name="email"s
+            required
+        >
+        <button type="submit">Update Email</button>
+    </form>
+
+    <br>
+    <a href="/account">Back to Account</a>
+</body>
+</html>

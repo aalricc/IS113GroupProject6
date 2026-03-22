@@ -6,11 +6,21 @@
   <title>Home</title>
 </head>
 <body>
-  <div class="topnav">
-          <a class="active" href="../routes/home-routes.js">Home</a>
-          <a href="../routes/watchlist-routes.js">Watchlist</a>
-          <a href="#">Logout</a>
-  </div>
+  <% if (isLoggedIn) { %>
+    <div class="topnav">
+      <a class="active" href="/">Home</a>
+      <a href="/watchlist">Watchlist</a>
+      <a href="/account">Account</a>
+      <a href="/logout">Logout</a>
+    </div>
+  <% } else { %>
+    <div class="topnav">
+      <a class="active" href="/">Home</a>
+      <a href="/watchlist">Watchlist</a>
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    </div>
+  <% } %>
 
   <h1>Home</h1>
   <h2>Popular Movies</h2>

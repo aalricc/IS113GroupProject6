@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account</title>
+</head>
+<body>
+    <% if (isLoggedIn) { %>
+        <div class="topnav">
+            <a href="/">Home</a>
+            <a href="/watchlist">Watchlist</a>
+            <a href="/account">Account</a>
+            <a href="/logout">Logout</a>
+        </div>
+    <% } else { %>
+        <div class="topnav">
+            <a href="/">Home</a>
+            <a href="/watchlist">Watchlist</a>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        </div>
+    <% } %>
+
+    <h1>My Account</h1>
+
+    <table border="1">
+        <tr>
+            <th>Username</th>
+            <td><%= user.username %></td>
+            <td>
+                <a href="/account/update-username">Update Username</a>
+            </td>
+        </tr>
+
+        <tr>
+            <th>Email</th>
+            <td><%= user.email %></td>
+            <td>
+                <a href="/account/update-email">Update Email</a>
+            </td>
+        </tr>
+    </table><br/>
+
+    Want to change your password? <a href="/account/change-password">Change it here</a><br/><br/>
+    Want to delete your account? <a href="/account/delete-account">Click here to delete</a>
+
+</body>
+</html>
