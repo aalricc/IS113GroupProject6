@@ -52,26 +52,19 @@ const userSchema = new mongoose.Schema({
 const reviewSchema = new mongoose.Schema({
     movieId: String,
     reviewContent: String,
+    rating: String,
     userId: String,
     username: String
 });
 
-const watchlistSchema = new mongoose.Schema({
-    userId: String,
-    movieName: String,
-    rating: String,
-    dateAdded: String
-});
-
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 const Review = mongoose.models.Review || mongoose.model("Review", reviewSchema);
-const Watchlist = mongoose.models.Watchlist || mongoose.model("Watchlist", watchlistSchema);
 
 module.exports = {
     MONGO_URI,
     connectDB,
     disconnectDB,
+    pushToDB,
     User,
     Review,
-    Watchlist
 };
