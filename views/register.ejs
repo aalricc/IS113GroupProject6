@@ -3,48 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Register</title>
 </head>
 <body>
     <% if (isLoggedIn) { %>
-    <div class="topnav">
-      <a class="active" href="../routes/home-routes.js">Home</a>
-      <a href="../routes/login-routes.js">User Account</a>
-      <a href="../routes/watchlist-routes.js">Watchlist</a>
-      <a href="../routes/home-routes.js">Logout</a>
-    </div>
-    <% }  else { %>
-       <div class="topnav">
-          <a class="active" href="../routes/home-routes.js">Home</a>
-            <a href="../routes/watchlist-routes.js">Watchlist</a>
-            <a href="../routes/login-routes.js">Login</a>
-            <a href="../routes/register-routes.js">Register</a>
+        <div class="topnav">
+            <a href="/">Home</a>
+            <a href="/watchlist">Watchlist</a>
+            <a href="/logout">Logout</a>
+        </div>
+    <% } else { %>
+        <div class="topnav">
+            <a href="/">Home</a>
+            <a href="/watchlist">Watchlist</a>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
         </div>
     <% } %>
 
     <h1>Register Page</h1>
 
-    <form action="/register-attempt" method="post">
-        <b><label for="usernameRegister">Username</label></b><br/>
-        <input type="text" id="usernameRegister" name="usernameRegister">
-        <br/><br/>
+    <% if (errors && errors.length > 0) { %>
+        <ul>
+            <% errors.forEach(error => { %>
+                <li><%= error %></li>
+            <% }) %>
+        </ul>
+    <% } %>
 
-        <b><label for="emailRegister">Email</label></b><br/>
-        <input type="text" id="emailRegister" name="emailRegister">
-        <br/><br/>
+    <form action="/register-attempt" method="POST">
+        <label for="usernameRegister">Username</label><br>
+        <input type="text" id="usernameRegister" name="usernameRegister" required>
+        <br><br>
 
-        <b><label for="passwordRegister">Password</label></b><br/>
-        <input type="text" id="passwordRegister" name="passwordRegister">
-        <br/><br/>
+        <label for="emailRegister">Email</label><br>
+        <input type="email" id="emailRegister" name="emailRegister" required>
+        <br><br>
 
-        <b><label for="confirmPasswordRegister">Confirm Password</label></b><br/>
-        <input type="text" id="confirmPasswordRegister" name="confirmPasswordRegister">
-        <br/><br/>
+        <label for="passwordRegister">Password</label><br>
+        <input type="password" id="passwordRegister" name="passwordRegister" required>
+        <br><br>
 
-        <button type="submit">Register</button><br/><br/>
+        <label for="confirmPasswordRegister">Confirm Password</label><br>
+        <input type="password" id="confirmPasswordRegister" name="confirmPasswordRegister" required>
+        <br><br>
 
-        Already have an account? <a href="/login-page">Login here !</a>
+        <button type="submit">Register</button>
     </form>
 
+    <p>Already have an account? <a href="/login">Login here</a></p>
 </body>
 </html>
