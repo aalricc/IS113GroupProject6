@@ -3,10 +3,11 @@ const session = require('express-session');
 const loginRoutes = require("./routes/login-routes");
 const registerRoutes = require("./routes/register-routes");
 const accountRoutes = require("./routes/account-routes");
+const watchListRoutes = require("./routes/watchlist-routes");
 
 const app = express();
 const path = require('path');
-const { getPopularMovies } = require("./data/movies");
+const { getPopularMovies, clearPopularMoviesCache } = require("./data/movies");
 const { connectDB } = require("./data/mongo");
 app.set("view engine", "ejs");
 app.use(express.urlencoded({extended: true}));
@@ -31,15 +32,6 @@ app.use("/", loginRoutes);
 app.use("/", registerRoutes);
 app.use("/", accountRoutes);
 
-connectDB()
-  .then(() => {
-    console.log("MongoDB connected");
-  })
-  .catch((err) => {
-    console.log("MongoDB connection error:", err);
-  });
-
-  
 function startServer() {
   const hostname = "localhost"; // Define server hostname
   const port = 8000;// Define port number
@@ -50,7 +42,14 @@ function startServer() {
   });
 }
 
-connectDB().then(startServer);
+connectDB()
+  .then(() => {
+    console.log("MongoDB connected");
+    startServer();
+  })
+  .catch((err) => {
+    console.log("MongoDB connection error:", err);
+  });
 
 
 //Routes
@@ -67,8 +66,12 @@ app.get("/", async (req, res) => {
   res.render("home", { movies });
 });
 
-const hostname = "localhost";
-const port = 3000;
-app.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+app.post("/clear-movie-cache", async (req, res) => {
+  try {
+    await clearPopularMoviesCache();
+    res.redirect("/");
+  } catch (error) {
+    console.log("Error clearing movie cache:", error);
+    res.status(500).send("Failed to clear movie cache");
+  }
 });
