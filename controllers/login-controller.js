@@ -15,7 +15,7 @@ exports.loginAttempt = async (req, res) => {
     try {
         const user = await User.findOneUsername(usernameEntered);
 
-        // user found but password dont match
+        // user not found or user found but password dont match
         if (!user || user.password != passwordEntered){
             return res.render("login", {
                 falseLogin: true,

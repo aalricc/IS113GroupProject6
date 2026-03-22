@@ -37,3 +37,15 @@ exports.createUser = function(userData) {
 exports.findById = function(id){
     return User.findById(id);
 };
+
+exports.findByIdAndUpdate = function(id, updateData, options) {
+    return User.findByIdAndUpdate(id, updateData, options);
+};
+
+exports.findOneEmail = function(email) {
+    return User.findOne({email: email});
+};
+
+exports.findByIdAndDelete = function(id) {
+    return User.findByIdAndDelete(id);
+};

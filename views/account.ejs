@@ -24,7 +24,26 @@
 
     <h1>My Account</h1>
 
-    <p><strong>Username:</strong> <%= user.username %></p>
-    <p><strong>Email:</strong> <%= user.email %></p>
+    <table border="1">
+        <tr>
+            <th>Username</th>
+            <td><%= user.username %></td>
+            <td>
+                <a href="/account/update-username">Update Username</a>
+            </td>
+        </tr>
+
+        <tr>
+            <th>Email</th>
+            <td><%= user.email %></td>
+            <td>
+                <a href="/account/update-email">Update Email</a>
+            </td>
+        </tr>
+    </table><br/>
+
+    Want to change your password? <a href="/account/change-password">Change it here</a><br/><br/>
+    Want to delete your account? <a href="/account/delete-account">Click here to delete</a>
+
 </body>
 </html>
