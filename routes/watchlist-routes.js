@@ -4,7 +4,7 @@ const watchlistController = require("./../controllers/watchlist-controller");
 
 router = express.Router();
 
-router.get("/watchlist", watchlistController.showWatchlist);
+router.get("/", watchlistController.showWatchlist);
 
 router.post("/removeMovie", watchlistController.removeMovie);
 router.post("/markWatched", watchlistController.markWatched);

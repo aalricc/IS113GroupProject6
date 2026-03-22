@@ -56,16 +56,8 @@ const reviewSchema = new mongoose.Schema({
     username: String
 });
 
-const watchlistSchema = new mongoose.Schema({
-    userId: String,
-    movieName: String,
-    rating: String,
-    dateAdded: String
-});
-
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 const Review = mongoose.models.Review || mongoose.model("Review", reviewSchema);
-const Watchlist = mongoose.models.Watchlist || mongoose.model("Watchlist", watchlistSchema);
 
 module.exports = {
     MONGO_URI,
@@ -73,5 +65,4 @@ module.exports = {
     disconnectDB,
     User,
     Review,
-    Watchlist
 };

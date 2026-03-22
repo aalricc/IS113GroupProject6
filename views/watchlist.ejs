@@ -25,31 +25,31 @@
             <th>Watched</th>
             <th>Actions</th>
         </tr>
-        <% for (let movie of movies) { %>
+        <% for (let movie of watchList) { %>
         <tr>
-            <td><a href="#"><%=movie.title %></a></td>
-            <td>★ <%=movie.review %></td>
-            <td><%=movie.date %></td>
+            <td><a href="#"><%=movie.movieName %></a></td>
+            <td>★ <%=movie.rating %></td>
+            <td><%=movie.dateAdded %></td>
             <!-- If movie has not been watched, don't display a tick symbol -->
-            <% if (movie.isWatched == "No") { %>
-            <td><%=movie.isWatched %></td>
+            <% if (!movie.hasWatched) { %>
+            <td>No</td>
             <!-- Else, display a tick symbol -->
             <% } else { %>
-            <td>✔ <%=movie.isWatched %></td>
+            <td>✔ Yes</td>
             <% } %>
             <td>
                 <!--If movie has not been watched yet, display the "Mark Watched" button to allow user to mark movie as watched-->
-                <% if (movie.isWatched == "No") { %>
-                <form action="/markWatched" method="post">
-                <input type="hidden" name="movie" value="<%=movie.title%>">
+                <% if (!movie.hasWatched) { %>
+                <form action="/watchlist/markWatched" method="post">
+                <input type="hidden" name="movie" value="<%=movie.movieName%>">
                 <button type="submit">Mark Watched</button>
                 <br>
                 <br>
                 </form>
                 <!-- Else, just display the Remove button to allow user to remove movie from watchlist-->
                 <% } %>
-                <form action="/removeMovie" method="post">
-                <input type="hidden" name="movie" value="<%=movie.title%>">
+                <form action="/watchlist/removeMovie" method="post">
+                <input type="hidden" name="movie" value="<%=movie.movieName%>">
                 <button type="submit">Remove</button>
                 </form>
                 <!-- -->
