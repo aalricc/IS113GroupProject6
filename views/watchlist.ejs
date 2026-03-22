@@ -47,6 +47,13 @@
                 <br>
                 </form>
                 <!-- Else, just display the Remove button to allow user to remove movie from watchlist-->
+                <% } else { %>
+                <form action="/watchlist/markUnwatched" method="post">
+                <input type="hidden" name="movie" value="<%=movie.movieName%>">
+                <button type="submit">Mark Unwatched</button>
+                <br>
+                <br>
+                </form>
                 <% } %>
                 <form action="/watchlist/removeMovie" method="post">
                 <input type="hidden" name="movie" value="<%=movie.movieName%>">
@@ -59,6 +66,6 @@
         <% } %>
     </table>
     <br>
-    <a href="#"><button type="button">Browse Movies</button></a>  
+    <a href="/"><button type="button">Browse Movies</button></a>  
 </body>
 </html>

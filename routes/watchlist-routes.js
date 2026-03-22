@@ -8,4 +8,5 @@ router.get("/", watchlistController.showWatchlist);
 
 router.post("/removeMovie", watchlistController.removeMovie);
 router.post("/markWatched", watchlistController.markWatched);
+router.post("/markUnwatched", watchlistController.markUnwatched);
 module.exports = router;

@@ -58,3 +58,21 @@ exports.markWatched = async (req,  res) => {
 
     res.redirect("/watchlist")
 }
+
+exports.markUnwatched = async (req,  res) => {
+    // Need to retrieve user id first
+    let user_id = "u123"
+    const movie_name = req.body.movie
+    
+    try {
+        let updatedMovie = await Movie.markAsUnwatched(user_id,movie_name) // Mark movie as watched according to user_id and name of movie
+        console.log(updatedMovie)
+    }
+
+    catch(error) {
+        console.log(error);
+        res.send("Failed to update movie")
+    }
+
+    res.redirect("/watchlist")
+}

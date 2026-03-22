@@ -48,3 +48,7 @@ exports.removeMovie = function(userId, movieName) {
 exports.markAsWatched = function(userId, movieName) {
     return Watchlist.updateOne({userId: userId, movieName: movieName}, {hasWatched: true}) 
 }
+
+exports.markAsUnwatched = function(userId, movieName) {
+    return Watchlist.updateOne({userId: userId, movieName: movieName}, {hasWatched: false}) 
+}
