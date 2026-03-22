@@ -52,26 +52,41 @@ const userSchema = new mongoose.Schema({
 const reviewSchema = new mongoose.Schema({
     movieId: String,
     reviewContent: String,
+    rating: String,
     userId: String,
     username: String
 });
 
-const watchlistSchema = new mongoose.Schema({
-    userId: String,
-    movieName: String,
-    rating: String,
-    dateAdded: String
+const movieCacheSchema = new mongoose.Schema({
+    cacheKey: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    movies: {
+        type: Array,
+        default: []
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 const Review = mongoose.models.Review || mongoose.model("Review", reviewSchema);
-const Watchlist = mongoose.models.Watchlist || mongoose.model("Watchlist", watchlistSchema);
+const MovieCache = mongoose.models.MovieCache || mongoose.model("MovieCache", movieCacheSchema);
 
 module.exports = {
     MONGO_URI,
     connectDB,
     disconnectDB,
+    pushToDB,
+    readFromDB,
+    readOneFromDB,
+    updateInDB,
+    deleteFromDB,
     User,
     Review,
-    Watchlist
+    MovieCache,
 };

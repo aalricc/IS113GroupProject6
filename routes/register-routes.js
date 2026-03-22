@@ -5,8 +5,7 @@ const registerController = require("./../controllers/register-controller");
 
 const router = express.Router();
 
-router.get("/register", registerController.someFunction);
-
-router.post("/register-attempt", registerController.someFunction);
+router.get("/register", registerController.showRegisterPage);
+router.post("/register-attempt", registerController.registerAttempt);
 
 module.exports = router;

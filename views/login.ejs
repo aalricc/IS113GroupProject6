@@ -3,45 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Login</title>
 </head>
 <body>
-    <% if (isLoggedIn === true) { %>
-    <div class="topnav">
-      <a class="active" href="../routes/home-routes.js">Home</a>
-      <a href="../routes/login-routes.js">User Account</a>
-      <a href="../routes/watchlist-routes.js">Watchlist</a>
-      <a href="../routes/home-routes.js">Logout</a>
-    </div>
-    <% }  else { %>
-       <div class="topnav">
-          <a class="active" href="../routes/home-routes.js">Home</a>
-            <a href="../routes/watchlist-routes.js">Watchlist</a>
-            <a href="../routes/login-routes.js">Login</a>
-            <a href="../routes/register-routes.js">Register</a>
+    <% if (isLoggedIn) { %>
+        <div class="topnav">
+            <a class="active" href="/">Home</a>
+            <a href="/watchlist">Watchlist</a>
+            <a href="/change-password">Change Password</a>
+            <a href="/logout">Logout</a>
+        </div>
+    <% } else { %>
+        <div class="topnav">
+            <a class="active" href="/">Home</a>
+            <a href="/watchlist">Watchlist</a>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
         </div>
     <% } %>
 
     <h1>Login Page</h1>
 
-    <% if (falseLogin === false) { %>
-        <h2>Invalid username or password. Register if you have not !</h2>
+    <% if (falseLogin) { %>
+        <h2>Invalid username or password. Register if you have not!</h2>
     <% } %>
 
-    <form action="/login-attempt" method="post">
+    <form action="/login-attempt" method="POST">
         <b><label for="usernameEntered">Username</label></b><br/>
-        <input id="usernameEntered" type="text" name="usernameEntered">
+        <input id="usernameEntered" type="text" name="usernameEntered" required>
         <br/><br/>
 
         <b><label for="passwordEntered">Password</label></b><br/>
-        <input id="passwordEntered" type="text" name="passwordEntered">
+        <input id="passwordEntered" type="password" name="passwordEntered" required>
         <br/><br/>
 
-        <button type="submit">Login</button><br/>
+        <button type="submit">Login</button><br/><br/>
 
-        Dont have an account? <a href="../routes/register-routes.js">Click Here to Register Today !</a>
+        Don't have an account? <a href="/register">Click here to register today!</a>
     </form>
-
-    
 </body>
 </html>
