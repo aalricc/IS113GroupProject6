@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account</title>
+</head>
+<body>
+    <% if (isLoggedIn) { %>
+        <div class="topnav">
+            <a href="/">Home</a>
+            <a href="/watchlist">Watchlist</a>
+            <a href="/account">Account</a>
+            <a href="/logout">Logout</a>
+        </div>
+    <% } else { %>
+        <div class="topnav">
+            <a href="/">Home</a>
+            <a href="/watchlist">Watchlist</a>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        </div>
+    <% } %>
+
+    <h1>My Account</h1>
+
+    <p><strong>Username:</strong> <%= user.username %></p>
+    <p><strong>Email:</strong> <%= user.email %></p>
+</body>
+</html>
