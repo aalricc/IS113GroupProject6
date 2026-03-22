@@ -1,5 +1,5 @@
 const  {getPopularMovies,searchMovies,getMovieById}  = require("../data/movies");
-const {Review,pushToDB} = require("../data/mongo")
+const {Review,pushToDB} = require("../models/moviereviews-model")
 
 exports.moviereviews = async (req,res) => {
     const id = req.params.id
