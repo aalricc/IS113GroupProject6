@@ -1,5 +1,18 @@
 const dns = require("dns");
 const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+dotenv.config({path: "./config.env"});
+async function connectDB() {
+    
+    try {
+        await mongoose.connect(process.env.DB);
+        console.log("MongoDB connected successfully");
+    } catch (error) {
+        console.error("MongoDB connection failed:", error.message);
+        process.exit(1);
+    }
+};
+
 
 async function pushToDB(Model, data) {
     await connectDB();
