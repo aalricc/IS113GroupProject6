@@ -12,7 +12,6 @@ const { connectDB } = require("./data/mongo");
 app.set("view engine", "ejs");
 app.use(express.urlencoded({extended: true}));
 
-const watchListRoutes = require('./routes/watchlist-routes');
 
 
 // Routes
@@ -37,25 +36,6 @@ app.use((req, res, next) => {
 app.use("/", loginRoutes);  
 app.use("/", registerRoutes);
 app.use("/", accountRoutes);
-
-function startServer() {
-  const hostname = "localhost"; // Define server hostname
-  const port = 8000;// Define port number
- 
-  // Start the server and listen on the specified hostname and port
-  app.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
-  });
-}
-
-connectDB()
-  .then(() => {
-    console.log("MongoDB connected");
-    startServer();
-  })
-  .catch((err) => {
-    console.log("MongoDB connection error:", err);
-  });
 
   
 function startServer() {
