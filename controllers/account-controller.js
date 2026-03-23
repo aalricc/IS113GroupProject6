@@ -10,7 +10,8 @@ exports.showAccountPage = async (req, res)=>{
         }
 
         res.render('account', {
-            user
+            user,
+            isAdmin: req.session.isAdmin || false
         });
     } catch (error) {
         console.log("Account page error:", error);
