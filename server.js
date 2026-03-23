@@ -1,23 +1,26 @@
-const express = require("express");
-const session = require("express-session");
+const express = require('express');
+const session = require('express-session');
+const dotenv = require("dotenv");
+const mongoose = require('mongoose');
+
 const loginRoutes = require("./routes/login-routes");
 const registerRoutes = require("./routes/register-routes");
 const accountRoutes = require("./routes/account-routes");
-const watchListRoutes = require("./routes/watchlist-routes");
+const watchListRoutes = require('./routes/watchlist-routes');
+
+dotenv.config({path: "./config.env"});
 
 const app = express();
-const path = require("path");
-const { getPopularMovies, clearPopularMoviesCache } = require("./data/movies");
-const { connectDB } = require("./data/mongo");
+const path = require('path');
+const { getPopularMovies } = require("./data/movies");
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 
 // secret: signs the session cookie
 // resave: false: avoids saving unchanged sessions
 // saveUninitialized: false: don’t create empty sessions for everyone
-app.use(
-  session({
-    secret: "mysecretkey",
+app.use(session({
+    secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
   }),
@@ -33,7 +36,32 @@ app.use((req, res, next) => {
 app.use("/", loginRoutes);
 app.use("/", registerRoutes);
 app.use("/", accountRoutes);
+app.use('/watchlist', watchListRoutes);
 
+//Routes
+let movies = [
+    {title: "The Shawshank Redemption", review: "9.3", date:"3/9/2026", isWatched:"Yes"},
+    {title: "Pulp Fiction", review: "8.3", date: "3/9/2026", isWatched:"Yes"},
+    {title: "The Dark Knight", review: "8.3", date: "3/9/2026", isWatched:"No"}
+]
+
+
+app.get("/", async (req, res) => {
+  const movies = await getPopularMovies();
+  res.render("home", { movies });
+});
+
+async function connectDB() {
+    try {
+        await mongoose.connect(process.env.DB);
+        console.log("MongoDB connected successfully");
+    } catch (error) {
+        console.error("MongoDB connection failed:", error.message);
+        process.exit(1);
+    }
+};
+
+  
 function startServer() {
   const hostname = "localhost"; // Define server hostname
   const port = 8000; // Define port number
@@ -44,45 +72,5 @@ function startServer() {
   });
 }
 
-connectDB()
-  .then(() => {
-    console.log("MongoDB connected");
-    startServer();
-  })
-  .catch((err) => {
-    console.log("MongoDB connection error:", err);
-  });
+connectDB().then(startServer);
 
-//Routes
-let movies = [
-  {
-    title: "The Shawshank Redemption",
-    review: "9.3",
-    date: "3/9/2026",
-    isWatched: "Yes",
-  },
-  { title: "Pulp Fiction", review: "8.3", date: "3/9/2026", isWatched: "Yes" },
-  {
-    title: "The Dark Knight",
-    review: "8.3",
-    date: "3/9/2026",
-    isWatched: "No",
-  },
-];
-
-app.use("/watchlist", watchListRoutes);
-
-app.get("/", async (req, res) => {
-  const movies = await getPopularMovies();
-  res.render("home", { movies });
-});
-
-app.post("/clear-movie-cache", async (req, res) => {
-  try {
-    await clearPopularMoviesCache();
-    res.redirect("/");
-  } catch (error) {
-    console.log("Error clearing movie cache:", error);
-    res.status(500).send("Failed to clear movie cache");
-  }
-});
