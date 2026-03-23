@@ -1,6 +1,7 @@
 
 const fs = require('fs/promises');
 const User = require(".././models/user");
+const bcrypt = require('bcrypt');
 
 exports.showLoginPage = (req, res) => {
     res.render("login", {
@@ -17,11 +18,19 @@ exports.loginAttempt = async (req, res) => {
         const user = await User.findOneUsername(usernameEntered);
 
         // user not found or user found but password dont match
-        if (!user || user.password != passwordEntered){
+        if (!user){
             return res.render("login", {
                 falseLogin: true,
                 isLoggedIn: req.session.isLoggedIn || false
-            })
+            });
+        }
+
+        const match = await bcrypt.compare(passwordEntered, user.password);
+        if (!match){
+            return res.render("login", {
+                falseLogin: true,
+                isLoggedIn: req.session.isLoggedIn || false
+            });
         }
 
         req.session.isLoggedIn = true;
@@ -29,6 +38,10 @@ exports.loginAttempt = async (req, res) => {
             id: user._id,
             username: user.username
         };
+
+        if (user.username === "admin" && match){
+            req.session.isAdmin = true;
+        }
 
         return res.redirect("/");
     } catch (error) {
