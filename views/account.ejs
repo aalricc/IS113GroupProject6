@@ -43,7 +43,11 @@
     </table><br/>
 
     Want to change your password? <a href="/account/change-password">Change it here</a><br/><br/>
-    Want to delete your account? <a href="/account/delete-account">Click here to delete</a>
+    Want to delete your account? <a href="/account/delete-account">Click here to delete</a><br/><br/>
+
+    <% if (isAdmin) { %>
+        <a href="/admin-page">Admin Page</a>
+    <% } %>
 
 </body>
 </html>
