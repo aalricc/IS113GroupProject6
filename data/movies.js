@@ -1,7 +1,9 @@
+const { MovieCache, pushToDB, readOneFromDB, updateInDB, deleteFromDB } = require("./mongo");
+
 const TMDB_API_KEY = "1a5d529ccb58f5db5d1c537364032cd0";
 const BASE_URL = "https://api.themoviedb.org/3";
-
-let cachedMovies = null; 
+const POPULAR_MOVIES_CACHE_KEY = "popular_movies";
+const CACHE_DURATION_MS = 24 * 60 * 60 * 1000;
 
 function normaliseMovie(movie) {
   return {
@@ -15,20 +17,52 @@ function normaliseMovie(movie) {
   };
 }
 
+function isCacheExpired(cacheEntry) {
+  if (!cacheEntry) return true;
+  if (!cacheEntry.updatedAt) return true;
+
+  return Date.now() - new Date(cacheEntry.updatedAt).getTime() > CACHE_DURATION_MS;
+}
+
 async function fetchAndCache() {
-  if (cachedMovies) return cachedMovies;
+  const existingCache = await readOneFromDB(MovieCache, {
+    cacheKey: POPULAR_MOVIES_CACHE_KEY
+  });
+
+  if (existingCache && existingCache.movies && existingCache.movies.length > 0 && !isCacheExpired(existingCache)) {
+    return existingCache.movies;
+  }
 
   const response = await fetch(`${BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
   const data = await response.json();
+  const movies = (data.results || []).map(movie => normaliseMovie(movie));
 
-  cachedMovies = data.results.map(movie => normaliseMovie(movie));
+  if (existingCache) {
+    await updateInDB(
+      MovieCache,
+      { cacheKey: POPULAR_MOVIES_CACHE_KEY },
+      { movies: movies, updatedAt: new Date() }
+    );
+  } else {
+    await pushToDB(MovieCache, {
+      cacheKey: POPULAR_MOVIES_CACHE_KEY,
+      movies: movies,
+      updatedAt: new Date()
+    });
+  }
 
-  return cachedMovies;
+  return movies;
 }
 
 // for home page 
 async function getPopularMovies() {
   return await fetchAndCache();
+}
+
+async function clearPopularMoviesCache() {
+  return await deleteFromDB(MovieCache, {
+    cacheKey: POPULAR_MOVIES_CACHE_KEY
+  });
 }
 
 // for movie page 
@@ -50,4 +84,4 @@ async function searchMovies(query) {
   return data.results.map(movie => normaliseMovie(movie));
 }
 
-module.exports = { getPopularMovies, getMovieById, searchMovies };
+module.exports = { getPopularMovies, clearPopularMoviesCache, getMovieById, searchMovies };

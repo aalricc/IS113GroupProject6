@@ -35,9 +35,33 @@ const reviewSchema = new mongoose.Schema({
     username: String
 });
 
+const movieCacheSchema = new mongoose.Schema({
+    cacheKey: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    movies: {
+        type: Array,
+        default: []
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
+    }
+});
+
+const User = mongoose.models.User || mongoose.model("User", userSchema);
 const Review = mongoose.models.Review || mongoose.model("Review", reviewSchema);
+const MovieCache = mongoose.models.MovieCache || mongoose.model("MovieCache", movieCacheSchema);
 
 module.exports = {
     pushToDB,
+    readFromDB,
+    readOneFromDB,
+    updateInDB,
+    deleteFromDB,
+    User,
     Review,
+    MovieCache,
 };

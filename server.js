@@ -14,7 +14,7 @@ const app = express();
 const path = require('path');
 const { getPopularMovies } = require("./data/movies");
 app.set("view engine", "ejs");
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 // secret: signs the session cookie
 // resave: false: avoids saving unchanged sessions
@@ -22,17 +22,18 @@ app.use(express.urlencoded({extended: true}));
 app.use(session({
     secret: process.env.SECRET,
     resave: false,
-    saveUninitialized: false
-}));
+    saveUninitialized: false,
+  }),
+);
 
 app.use((req, res, next) => {
-    res.locals.isLoggedIn = req.session.isLoggedIn || false;
-    res.locals.currentUser = req.session.currentUser || null;
-    next(); 
+  res.locals.isLoggedIn = req.session.isLoggedIn || false;
+  res.locals.currentUser = req.session.currentUser || null;
+  next();
 });
 
 // use routes
-app.use("/", loginRoutes);  
+app.use("/", loginRoutes);
 app.use("/", registerRoutes);
 app.use("/", accountRoutes);
 app.use('/watchlist', watchListRoutes);
@@ -63,8 +64,8 @@ async function connectDB() {
   
 function startServer() {
   const hostname = "localhost"; // Define server hostname
-  const port = 8000;// Define port number
- 
+  const port = 8000; // Define port number
+
   // Start the server and listen on the specified hostname and port
   app.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
