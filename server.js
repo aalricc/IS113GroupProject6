@@ -7,6 +7,7 @@ const loginRoutes = require("./routes/login-routes");
 const registerRoutes = require("./routes/register-routes");
 const accountRoutes = require("./routes/account-routes");
 const watchListRoutes = require('./routes/watchlist-routes');
+const moviereviewsRoutes = require('./routes/moviereviews-routes');
 
 dotenv.config({path: "./config.env"});
 
@@ -16,9 +17,6 @@ const { getPopularMovies } = require("./data/movies");
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
-const moviereviewsRoutes = require('./routes/moviereviews-routes');
-app.use('/', moviereviewsRoutes);
 // secret: signs the session cookie
 // resave: false: avoids saving unchanged sessions
 // saveUninitialized: false: don’t create empty sessions for everyone
@@ -40,6 +38,7 @@ app.use("/", loginRoutes);
 app.use("/", registerRoutes);
 app.use("/", accountRoutes);
 app.use('/watchlist', watchListRoutes);
+app.use('/', moviereviewsRoutes);
 
 //Routes
 let movies = [

@@ -44,6 +44,7 @@ async function deleteFromDB(Model, filter) {
     return await Model.deleteOne(filter);
 }
 
+
 const reviewSchema = new mongoose.Schema({
     movieId: String,
     reviewContent: String,
@@ -54,13 +55,10 @@ const reviewSchema = new mongoose.Schema({
 
 const Review = mongoose.models.Review || mongoose.model("Review", reviewSchema);
 
-const User = mongoose.models.User || mongoose.model("User", userSchema);
-
 module.exports = {
     MONGO_URI,
     connectDB,
     disconnectDB,
     pushToDB,
-    User,
     Review,
 };
