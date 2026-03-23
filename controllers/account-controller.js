@@ -2,10 +2,6 @@ const User = require(".././models/user");
 
 // read portion
 exports.showAccountPage = async (req, res)=>{
-    if (!req.session.isLoggedIn) {
-        return res.redirect("/login");
-    }
-
     try {
         const user = await User.findById(req.session.currentUser.id);
 
@@ -23,10 +19,6 @@ exports.showAccountPage = async (req, res)=>{
 };
 
 exports.showUpdateUsernamePage = async (req, res) => {
-    if (!req.session.isLoggedIn) {
-        return res.redirect("/login");
-    }
-
     try {
         const user = await User.findById(req.session.currentUser.id);
 
@@ -46,10 +38,6 @@ exports.showUpdateUsernamePage = async (req, res) => {
 };
 
 exports.updateUsername = async (req, res) => {
-    if (!req.session.isLoggedIn) {
-        return res.redirect("/login");
-    }
-
     const newUsername = req.body.username;
     let errors = [];
 
@@ -110,10 +98,6 @@ exports.updateUsername = async (req, res) => {
 };
 
 exports.showUpdateEmailPage = async (req, res) => {
-    if (!req.session.isLoggedIn) {
-        return res.redirect("/login");
-    }
-
     try {
         const user = await User.findById(req.session.currentUser.id);
 
@@ -133,10 +117,6 @@ exports.showUpdateEmailPage = async (req, res) => {
 };
 
 exports.updateEmail = async (req, res) => {
-    if (!req.session.isLoggedIn) {
-        return res.redirect("/login");
-    }
-
     const newEmail = req.body.email.trim();
     let errors = [];
 
@@ -191,10 +171,6 @@ exports.updateEmail = async (req, res) => {
 };
 
 exports.showChangePasswordPage = async(req, res) => {
-    if (!req.session.isLoggedIn) {
-        return res.redirect("/login");
-    }
-
     try{
         const user = await User.findById(req.session.currentUser.id);
 
@@ -214,10 +190,6 @@ exports.showChangePasswordPage = async(req, res) => {
 };
 
 exports.changePassword = async (req, res) => {
-    if (!req.session.isLoggedIn) {
-        return res.redirect("/login");
-    }
-
     const currentPassword = req.body.currentPassword;
     const newPassword = req.body.newPassword;
     const confirmNewPassword = req.body.confirmNewPassword;
@@ -275,10 +247,6 @@ exports.changePassword = async (req, res) => {
 };
 
 exports.showDeleteAccountPage = async (req, res) => {
-    if (!req.session.isLoggedIn) {
-        return res.redirect("/login");
-    }
-
     try {
         const user = await User.findById(req.session.currentUser.id);
 
@@ -296,10 +264,6 @@ exports.showDeleteAccountPage = async (req, res) => {
 };
 
 exports.deleteAccount = async (req, res) => {
-    if (!req.session.isLoggedIn) {
-        return res.redirect("/login");
-    }
-
     try {
         const user = await User.findById(req.session.currentUser.id);
 
@@ -317,7 +281,7 @@ exports.deleteAccount = async (req, res) => {
                 return res.status(500).send("Could not log out after deletion");
             }
 
-            res.clearCookie("connect.sid");
+                res.clearCookie("connect.sid");
             return res.redirect("/");
         });
     } catch (error) {

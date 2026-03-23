@@ -6,12 +6,17 @@
     <title>Document</title>
 </head>
 <body>
-        <div class="topnav">
-            
-      <a class="active" href="/">Home</a>
-      <a href="../routes/login-routes.js">User Account</a>
-      <a href="/watchlist">Watchlist</a>
-      <a href="../routes/home-routes.js">Logout</a>
+    <div class="topnav">
+    <a class="active" href="/">Home</a>
+    <a href="/watchlist">Watchlist</a>
+
+    <% if (isLoggedIn) { %>
+        <a href="/account"><%= currentUser.username %></a>
+        <a href="/logout">Logout</a>
+    <% } else { %>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+    <% } %>
     </div>
     <h1>My Watchlist</h1>
     <% if (msg) { %>
