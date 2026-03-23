@@ -12,8 +12,6 @@ const { connectDB } = require("./data/mongo");
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 
-
-
 // Routes
 const moviereviewsRoutes = require('./routes/moviereviews-routes');
 app.use('/', moviereviewsRoutes);
