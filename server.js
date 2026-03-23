@@ -7,6 +7,7 @@ const loginRoutes = require("./routes/login-routes");
 const registerRoutes = require("./routes/register-routes");
 const accountRoutes = require("./routes/account-routes");
 const watchListRoutes = require('./routes/watchlist-routes');
+const adminRoutes = require('./routes/admin-routes');
 
 dotenv.config({path: "./config.env"});
 
@@ -29,6 +30,7 @@ app.use(session({
 app.use((req, res, next) => {
   res.locals.isLoggedIn = req.session.isLoggedIn || false;
   res.locals.currentUser = req.session.currentUser || null;
+  res.locals.isAdmin = req.session.isAdmin || false;
   next();
 });
 
@@ -36,6 +38,7 @@ app.use((req, res, next) => {
 app.use("/", loginRoutes);
 app.use("/", registerRoutes);
 app.use("/", accountRoutes);
+app.use("/", adminRoutes);
 app.use('/watchlist', watchListRoutes);
 
 //Routes
