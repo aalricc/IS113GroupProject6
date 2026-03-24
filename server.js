@@ -28,7 +28,7 @@ app.use(session({
 );
 
 app.use((req, res, next) => {
-  res.locals.isLoggedIn = req.session.isLoggedIn || false;
+  res.locals.isLoggedIn = req.session.isLoggedIn ? req.session.isLoggedIn : false;
   res.locals.currentUser = req.session.currentUser || null;
   res.locals.isAdmin = req.session.isAdmin || false;
   next();
