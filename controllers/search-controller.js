@@ -1,32 +1,49 @@
-let searchHistory = [];
-const {getPopularMovies,searchMovies} = require("../data/movies");
-const movies = require("../models/moviereviews-model")
+const { searchMovies: fetchMovies } = require("../data/movies");  // got naming error so renamed searchMovies --> fetchmovie
+const { SearchHistory } = require("../models/searchHistory-model");
 
+exports.searchMovies = async (req, res) => {
+  const query = req.query.query || "";
+  const clean = query.trim().toLowerCase();
 
-exports.searchMovie = async (req,res) => {
-    let query = req.query.query || ""; // to label as query or undefined
-    let clean = query.trim().toLowerCase();
+  const isLoggedIn = !!req.session.isLoggedIn; // converts to boolean value
+  const userId = req.session.currentUser?.id; // returns undefined of no user
 
-  if (clean == "") {
-    res.render("search", {query, results:[], history: searchHistory
-    })
+  if (clean === "") {
+    let history = [];
+    if (isLoggedIn && userId) {
+      history = await SearchHistory.find({ userId }).sort({ searchedAt: -1 });
+    }
+    return res.render("search", { query, results: [], history, isLoggedIn });
   }
+
   try {
-    let results = await searchMovies(clean);
-    searchHistory.unshift({
-      query:clean,
-      results,
-      resultCount: results.length
-    })
-    res.render("search", {query:clean, results, history: searchHistory})
+    const results = await fetchMovies(clean); 
+    let history = [];
+
+    if (isLoggedIn && userId) {
+      await SearchHistory.create({
+        userId,
+        query: clean,
+        results,
+        resultCount: results.length,
+        searchedAt: new Date()
+      });
+
+      history = await SearchHistory.find({ userId }).sort({ searchedAt: -1 })
+    }
+
+    res.render("search", { query: clean, results, history, isLoggedIn });
+
   } catch (err) {
-    console.error('[Search] Error:', err);
-    res.render('search', {query: clean, results: [], history: searchHistory, errorMsg: 'Search failed. Please try again.' });
+    console.error("[Search] Error:", err);
+    res.render("search", { query: clean, results: [], history: [], isLoggedIn });
   }
-  };
+};
 
-
-exports.clearHistory =  (req, res) => {
-  searchHistory = [];
+exports.clearHistory = async (req, res) => {
+  const userId = req.session.currentUser?.id;
+  if (userId) {
+    await SearchHistory.deleteMany({ userId });
+  }
   res.redirect("/");
 };

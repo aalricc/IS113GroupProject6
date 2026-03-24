@@ -5,6 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Movie Search</title>
 <body>
+  <% if (isLoggedIn) { %>
+    <div class="topnav">
+      <a class="active" href="/">Home</a>
+      <a href="/watchlist">Watchlist</a>
+      <a href="/account">Account</a>
+      <a href="/logout">Logout</a>
+    </div>
+  <% } else { %>
+    <div class="topnav">
+      <a class="active" href="/">Home</a>
+      <a href="/watchlist">Watchlist</a>
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    </div>
+  <% } %>
 
   <h1>Movie Search</h1>
 
@@ -40,7 +55,7 @@
         <% } %>
         <br> 
 
-        <% if (history.length >0) { %>
+        <% if (isLoggedIn && (history.length >0)) { %>
           <form action="/history-clear" method="post">
             <button type="submit">Clear History</button>
           </form>
