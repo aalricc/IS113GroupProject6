@@ -22,6 +22,9 @@
     <% if (msg) { %>
     <p><%= msg %></p>
     <% } %>
+    <%if (!isLoggedIn) { %>
+    <p>Please <a href="/login">login</a> to start adding movies to watch list.</p>
+    <% } else { %>
     <% if (watchList.length === 0) { %>
     <h2>No movies added to watchlist yet.</h2>
     <% } else { %>
@@ -72,8 +75,11 @@
         </tr>
         <% } %>
         <% } %>
+        <% } %>
     </table>
     <br>
+    <% if (isLoggedIn) { %>
     <a href="/"><button type="button">Browse Movies</button></a>  
+    <% } %>
 </body>
 </html>

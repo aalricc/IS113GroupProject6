@@ -4,31 +4,28 @@ const Movie = require('./../models/watchlist-model');
 
 exports.showWatchlist = async (req, res) => {
 
-    let user_id = "u123"
-
- // Need to retrieve user id first
-  try {
-    let watchList = await Movie.findWatchlistByID(req.session.currentUser.username); // Go through the DB and find watchlist according to user_id
-    // console.log(watchList);
-    res.render("watchlist", { watchList, msg: "" }); // Render the EJS form view and pass the posts
-  } catch (error) {
-    console.error(error);
-    res.send("Please log in to access your watchlist."); // Send error message if fetching fails
-  }
+    try {
+        if (!req.session.currentUser || !req.session.currentUser.username) {
+            res.render("watchlist", { isLoggedIn: false, watchList: "", msg: "" })
+        }
+        else {
+            let watchList = await Movie.findWatchlistByID(req.session.currentUser.username); 
+            res.render("watchlist", { isLoggedIn: true, watchList, msg: "" }); 
+        }
+    } catch (error) {
+        console.error(error);
+        res.send("Error reading database."); 
+    }
 };
 
 exports.removeMovie = async (req, res) => {
-    // Need to retrieve user id first
-    // Search through MongoDB to find the movie title
-    // Delete entry from MongoDB based on movie title
-    const movie_name = req.body.movie
-    let user_id = "u123"
-    try {
-        let success= await Movie.removeMovie(req.session.currentUser.username, movie_name) // Remove movie from DB according to user_id and name of movie
-        // For removeMovieByTitle Implementation:
-        // 1) Use built in function deleteOne({user_id : user_id, movie_name: movie_name})
 
-        if(success.deletedCount === 1) {
+    const movie_name = req.body.movie
+   
+    try {
+        let success = await Movie.removeMovie(req.session.currentUser.username, movie_name) 
+
+        if (success.deletedCount === 1) {
             console.log("Movie successfully removed from watchlist")
         }
     }
@@ -41,17 +38,16 @@ exports.removeMovie = async (req, res) => {
     res.redirect("/watchlist")
 }
 
-exports.markWatched = async (req,  res) => {
-    // Need to retrieve user id first
-    let user_id = "u123"
+exports.markWatched = async (req, res) => {
+
     const movie_name = req.body.movie
-    
+
     try {
-        let updatedMovie = await Movie.markAsWatched(req.session.currentUser.username,movie_name) // Mark movie as watched according to user_id and name of movie
+        let updatedMovie = await Movie.markAsWatched(req.session.currentUser.username, movie_name) 
         console.log(updatedMovie)
     }
 
-    catch(error) {
+    catch (error) {
         console.log(error);
         res.send("Failed to update movie")
     }
@@ -59,17 +55,16 @@ exports.markWatched = async (req,  res) => {
     res.redirect("/watchlist")
 }
 
-exports.markUnwatched = async (req,  res) => {
-    // Need to retrieve user id first
-    let user_id = "u123"
+exports.markUnwatched = async (req, res) => {
+
     const movie_name = req.body.movie
-    
+
     try {
-        let updatedMovie = await Movie.markAsUnwatched(req.session.currentUser.username,movie_name) // Mark movie as watched according to user_id and name of movie
+        let updatedMovie = await Movie.markAsUnwatched(req.session.currentUser.username, movie_name) 
         console.log(updatedMovie)
     }
 
-    catch(error) {
+    catch (error) {
         console.log(error);
         res.send("Failed to update movie")
     }
@@ -78,46 +73,50 @@ exports.markUnwatched = async (req,  res) => {
 }
 
 exports.createWatchlist = async (req, res) => {
-    let user_id = "u123";
-    const name = req.body.movie;
-    const rating = req.body.rating;
-    const id = req.body.id
+    try {
 
-    let newMovie = {
-        movieName: name,
-        rating: rating,
-        hasWatched: false,
-        username: req.session.currentUser.username,
-        movieId: id
-    }
-
-    try{
-
-        let movie = await Movie.findWatchlistbyIDandName(req.session.currentUser.username, name)
-        console.log('Testing function')
-        console.log(movie)
-
-        if(movie) {
-            let msg = "Movie already exists in the watchlist"
-            let watchList = await Movie.findWatchlistByID(req.session.currentUser.username)
-            res.render("watchlist", {msg, watchList})
-
+        if (!req.session.currentUser || !req.session.currentUser.username) {
+            res.render("watchlist", { isLoggedIn: false, watchList: "", msg: "" })
         }
 
         else {
-            let result = await Movie.createWatchlist(newMovie);
-            // console.log(result)
-            console.log("Successfully added movie to watchlist")
-            let msg = "Movie added to watchlist."
-            let watchList = await Movie.findWatchlistByID(req.session.currentUser.username)
+            let user_id = "u123";
+            const name = req.body.movie;
+            const rating = req.body.rating;
+            const id = req.body.id
 
-            res.render("watchlist", {msg, watchList})
+            let newMovie = {
+                movieName: name,
+                rating: rating,
+                hasWatched: false,
+                username: req.session.currentUser.username,
+                movieId: id
+            }
+
+            let movie = await Movie.findWatchlistbyIDandName(req.session.currentUser.username, name)
+
+            if (movie) {
+                let msg = "Movie already exists in the watchlist"
+                let watchList = await Movie.findWatchlistByID(req.session.currentUser.username)
+                res.render("watchlist", {  isLoggedIn: true, msg, watchList })
+
+            }
+
+            else {
+                let result = await Movie.createWatchlist(newMovie);
+                console.log("Successfully added movie to watchlist")
+                let msg = "Movie added to watchlist."
+                let watchList = await Movie.findWatchlistByID(req.session.currentUser.username)
+
+                res.render("watchlist", { isLoggedIn: true, msg, watchList })
+
+            }
 
         }
 
     }
 
-    catch(error) {
+    catch (error) {
         console.log("Error adding movie to watchlist")
     }
 
