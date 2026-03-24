@@ -9,6 +9,7 @@ const accountRoutes = require("./routes/account-routes");
 const watchListRoutes = require('./routes/watchlist-routes');
 const moviereviewsRoutes = require('./routes/moviereviews-routes');
 const adminRoutes = require('./routes/admin-routes');
+const searchRoutes = require("./routes/search-route")
 
 dotenv.config({path: "./config.env"});
 
@@ -42,6 +43,7 @@ app.use("/", accountRoutes);
 app.use("/", adminRoutes);
 app.use('/', moviereviewsRoutes);
 app.use('/watchlist', watchListRoutes);
+app.use("/", searchRoutes);
 
 //Routes
 let movies = [
