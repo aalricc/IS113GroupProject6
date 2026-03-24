@@ -5,10 +5,11 @@ const watchlistController = require("./../controllers/watchlist-controller");
 
 const router = express.Router();
 
-router.get("/", authMiddleware, watchlistController.showWatchlist);
+router.get("/", authMiddleware.checkIfLogged, watchlistController.showWatchlist);
 
-router.post("/removeMovie", authMiddleware, watchlistController.removeMovie);
-router.post("/markWatched", authMiddleware, watchlistController.markWatched);
-router.post("/markUnwatched", authMiddleware, watchlistController.markUnwatched);
-router.post("/createMovie", authMiddleware, watchlistController.createWatchlist);
+router.post("/removeMovie", authMiddleware.checkIfLogged, watchlistController.removeMovie);
+router.post("/markWatched", authMiddleware.checkIfLogged, watchlistController.markWatched);
+router.post("/markUnwatched", authMiddleware.checkIfLogged, watchlistController.markUnwatched);
+router.post("/createMovie", authMiddleware.checkIfLogged, watchlistController.createWatchlist);
+
 module.exports = router;
