@@ -17,11 +17,17 @@
 </head>
 <body>
     <div class="topnav">
-        <a class="active" href="/">Home</a>
-        <a href="#">User Account</a>
-        <a href="#">Watchlist</a>
-        <a href="#">Logout</a>
-    </div>
+    <a class="active" href="/">Home</a>
+    <% if (isLoggedIn) { %>
+        <a href="/home">Home</a>
+        <a href="/account">User Account</a>
+        <a href="/watchlist">Watchlist</a>
+        <a href="/logout">Logout</a>
+    <% } else { %>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+    <% } %>
+</div>
 
     <div class="movie-header">
         <% if (movieData.poster) { %>
@@ -44,56 +50,41 @@
         </div>
     </div>
 
-    <hr />
 
-    <h2>User Reviews</h2>
-    <div id="reviews-list">
-        <% if (movieReviews && movieReviews.length > 0) { %>
-            <% movieReviews.forEach(function(review) { %>
-                <div class="review-card">
-                    <span class="rating-badge">Score: <%= movieReviews.rating %>/10</span>
-                    <strong> - <%= movieReviews.username || 'Anonymous' %></strong>
-                    <p><%= movieReviews.reviewContent %></p>
-                </div>
-            <% }); %>
-        <% } else { %>
-            <p>No reviews yet for this movie. Be the first to share your thoughts!</p>
-        <% } %>
-    </div>
-
+   <% if (isLoggedIn) { %>
     <form action="/movie-reviews/<%= movieData.id %>" method="POST">
         <h3>Submit a Review</h3>
-        
         <label for="rating">Your rating (1-10):</label><br>
         <input type="number" name="rating" id="rating" min="1" max="10" required style="width: 50px;" />
-        
         <br><br>
-        
         <label for="description">Comment:</label><br>
         <textarea name="description" id="description" rows="5" cols="50" placeholder="What did you think of the movie?" required></textarea>
-        
         <br><br>
-        
-        <button type="submit" style="padding: 10px 20px; cursor: pointer;">Send Review</button>
+        <button type="submit">Send Review</button>
     </form>
+<% } else { %>
+    <div style="background: #eee; padding: 20px; border-radius: 8px; margin-top: 30px; text-align: center;">
+        <p>Want to share your thoughts? <a href="/login">Login</a> to post a review!</p>
+    </div>
+<% } %>
 
   <h2>User Reviews</h2>
 
   <% if (movieReviews.length > 0) { %>
-    <% movieReviews.forEach(function(r) { %>
+    <% movieReviews.forEach(function(review) { %>
       <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
-        <p><strong><%= r.username %></strong> rated it <strong><%= r.rating %>/10</strong></p>
-        <p><%= r.reviewContent %></p>
-        <form action="/delete-review/<%= r._id %>/<%= movieData.id %>" method="POST" style="display:inline;">
-                <button type="submit" style="color: red; cursor: pointer;">
-                    Delete Review
-                </button>
-            </form>
+        <p><strong><%= review.username %></strong> rated it <strong><%= review.rating %>/10</strong></p>
+        <p><%= review.reviewContent %></p>
+        <% if (isLoggedIn && currentUser && String(review.userId) === String(currentUser.id)) { %>
+    <form action="/delete-review/<%= review._id %>/<%= movieData.id %>" method="POST" style="display:inline;">
+        <button type="submit" style="color: red; cursor: pointer;">Delete Review</button>
+    </form>
+<% } %>
       </div>
-    <% }) %>
+    <%}) %>
   <% } else { %>
     <p>No reviews yet. Be the first to post one!</p>
   <% } %>
-
+  
 </body>
 </html>
