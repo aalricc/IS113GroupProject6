@@ -6,11 +6,13 @@ const {User} = require("../models/user")
 exports.moviereviews = async (req,res) => {
     try {
     const id = req.params.id
+    const editId = req.query.editId || null; // checks if we are allowing the user to edit
     const movieData = await getMovieById(id) // This gets data from the id that is in the query
     const movieReviews = await Review.find({ movieId: id }) 
     res.render("moviereviews",{
         movieData,
         movieReviews,
+        editId,
         isLoggedIn: req.session.isLoggedIn || false, // Pass the session data into the view
         currentUser: req.session.currentUser || null
     })
@@ -71,5 +73,21 @@ exports.deleteReview = async (req,res) => {
     } catch (error) {
         console.error("Delete Error:", error);
         res.status(500).send("Could not delete the review.");
+    }
+};
+
+exports.updateReview = async (req, res) => {
+    try {
+        const { reviewId, movieId } = req.params;
+        const { rating, description } = req.body;
+
+        await Review.findOneAndUpdate(
+            { _id: reviewId, userId: req.session.currentUser.id },
+            { rating, reviewContent: description }
+        );
+
+        res.redirect(`/movie-reviews/${movieId}`);
+    } catch (error) {
+        res.status(500).send("Update failed");
     }
 };

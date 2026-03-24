@@ -13,4 +13,6 @@ router.post("/movie-reviews/:id", checkIfLogged,moviereviewsController.postRevie
 
 router.post("/delete-review/:reviewId/:movieId", checkIfLogged,moviereviewsController.deleteReview)
 
+router.post("/update-review/:reviewId/:movieId", checkIfLogged,moviereviewsController.updateReview)
+
 module.exports = router;
