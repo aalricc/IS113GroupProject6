@@ -55,7 +55,7 @@
         <% } %>
         <br> 
 
-        <% if (history.length >0) { %>
+        <% if (isLoggedIn && (history.length >0)) { %>
           <form action="/history-clear" method="post">
             <button type="submit">Clear History</button>
           </form>
