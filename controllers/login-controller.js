@@ -39,7 +39,7 @@ exports.loginAttempt = async (req, res) => {
             username: user.username
         };
 
-        if (user.username === "admin" && match){
+        if (user.role === "admin"){
             req.session.isAdmin = true;
         }
 

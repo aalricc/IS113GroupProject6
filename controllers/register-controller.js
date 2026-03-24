@@ -38,9 +38,14 @@ exports.registerAttempt = async (req, res) => {
 
     try {
         const existingUser = await User.findOneUsername(usernameRegister);
+        const existingEmail = await User.findOneEmail(emailRegister);
 
         if (existingUser) {
             errors.push("Username already exists");
+        }
+
+        if (existingEmail) {
+            errors.push("Email already exists");
         }
 
         if (errors.length > 0) {
