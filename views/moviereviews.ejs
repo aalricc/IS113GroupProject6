@@ -71,14 +71,29 @@
 
   <% if (movieReviews.length > 0) { %>
     <% movieReviews.forEach(function(review) { %>
-      <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
+        <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;"></div>
+        <% if (editId && String(editId) === String(review._id)) { %>
+        <form action="/update-review/<%= review._id %>/<%= movieData.id %>" method="POST">
+            <input type="number" name="rating" value="<%= review.rating %>" min="1" max="10" required />
+            <br>
+            <textarea name="description" rows="3" style="width:100%"><%= review.reviewContent %></textarea>
+            <br>
+            <button type="submit">Save Changes</button>
+            <a href="/movie-reviews/<%= movieData.id %>">Cancel</a>
+        </form>
+        <% } else { %>
+      
         <p><strong><%= review.username %></strong> rated it <strong><%= review.rating %>/10</strong></p>
         <p><%= review.reviewContent %></p>
         <% if (isLoggedIn && currentUser && String(review.userId) === String(currentUser.id)) { %>
+            <a href="/movie-reviews/<%= movieData.id %>?editId=<%= review._id %>" 
+                           style="color: blue; text-decoration: none; margin-right: 15px; font-weight: bold;">
+                           Edit Review
+                        </a>
     <form action="/delete-review/<%= review._id %>/<%= movieData.id %>" method="POST" style="display:inline;">
         <button type="submit" style="color: red; cursor: pointer;">Delete Review</button>
     </form>
-<% } %>
+<% }} %>
       </div>
     <%}) %>
   <% } else { %>
