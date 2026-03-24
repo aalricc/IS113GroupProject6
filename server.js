@@ -40,8 +40,8 @@ app.use("/", loginRoutes);
 app.use("/", registerRoutes);
 app.use("/", accountRoutes);
 app.use("/", adminRoutes);
-app.use('/watchlist', watchListRoutes);
 app.use('/', moviereviewsRoutes);
+app.use('/watchlist', watchListRoutes);
 
 //Routes
 let movies = [
