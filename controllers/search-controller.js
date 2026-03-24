@@ -13,11 +13,25 @@ exports.searchMovie = async (req,res) => {
   }
   try {
     let results = await searchMovies(clean);
+    let existing = null;
+    for (obj of searchHistory){
+      if (obj.query === clean){
+        existing = obj
+        break
+      }
+    }
+    if (existing){
+      exisiting.results = results
+      existing.resultCount = results.length
+      exisiting.searchedAt = new Date();
+    } else { 
     searchHistory.unshift({
       query:clean,
       results,
-      resultCount: results.length
-    })
+      resultCount: results.length,
+      searchedAt: new Date()
+    
+    })}
     res.render("search", {query:clean, results, history: searchHistory})
   } catch (err) {
     console.error('[Search] Error:', err);
