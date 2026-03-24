@@ -84,4 +84,4 @@ async function searchMovies(query) {
   return data.results.map(movie => normaliseMovie(movie));
 }
 
-module.exports = { getPopularMovies, clearPopularMoviesCache, getMovieById, searchMovies };
+module.exports = {getPopularMovies, clearPopularMoviesCache, getMovieById, searchMovies };

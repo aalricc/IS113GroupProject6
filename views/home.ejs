@@ -24,6 +24,13 @@
 
   <h1>Home</h1>
   <h2>Popular Movies</h2>
+  <div class="search-container">
+    <form action="/search" method="GET">
+      <input type="text" name="query" placeholder="Search for a movie...">
+      <button type="submit">Search</button>
+    </form>
+  </div>
+  <br>
   <form action="/clear-movie-cache" method="POST">
     <button type="submit">Clear Movie Cache</button>
   </form>
