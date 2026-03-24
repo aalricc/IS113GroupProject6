@@ -11,7 +11,7 @@ exports.showAccountPage = async (req, res)=>{
 
         res.render('account', {
             user,
-            isAdmin: req.session.isAdmin || false
+            isAdmin: user.role === 'admin'
         });
     } catch (error) {
         console.log("Account page error:", error);
