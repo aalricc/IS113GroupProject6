@@ -3,10 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Admin page</title>
 </head>
 <body>
+    <a class="active" href="/">Home</a>
+    <a href="/watchlist">Watchlist</a>
+    <a href="/account">Account</a>
+    <a href="/logout">Logout</a>
     <h1>Admin Page</h1>
+
+    <% if (reviews.length === 0) { %>
+        <p> No reviews found</p>
+    <% } else { %>
     
+    <h2>All movie reviews </h2>
+    <p>Total reviews: <%= reviews.length%> </p>
+    <table border="1">
+        <tr> 
+        <th>Movie</th>
+        <th>User</th>
+        <th>Rating</th>
+        <th>Review</th>
+        <th>Actions</th>
+        </tr>
+        <% reviews.forEach(review => { %>
+            <tr>
+                <td> <%=review.movieId %> </td>
+                <td> <%=review.username %></td>
+                <td> <%= review.rating %></td>
+                <td> <%= review.reviewContent%></td>
+                <td>
+                    <form action="/admin-delete-review/<%= review._id %>" method="POST">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+                </tr>
+        <% }) %>
+    </table>
+    <% } %>
+
+<h2>All Users</h2>
+<p>Total users: <%= users.length %></p>
+
+<% if (users.length === 0) { %>
+    <p>No users found</p>
+<% } else { %>
+    <table border="1">
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th colspan="2">Actions</th>
+        </tr>
+
+        <% users.forEach(user => { %>
+            <tr>
+                <form action="/admin-update-user/<%= user._id %>" method="POST">
+                    <td>
+                        <input type="text" name="username" value="<%= user.username %>">
+                    </td>
+                    <td>
+                        <input type="email" name="email" value="<%= user.email %>">
+                    </td>
+                    <td>
+                        <button type="submit">Edit</button>
+                    </td>
+                </form>
+                <td>
+                    <form action="/admin-delete-user/<%= user._id %>" method="POST">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        <% }) %>
+    </table>
+<% } %>
+
 </body>
 </html>
+
