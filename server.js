@@ -46,13 +46,6 @@ app.use('/watchlist', watchListRoutes);
 app.use("/", searchRoutes);
 
 //Routes
-let movies = [
-    {title: "The Shawshank Redemption", review: "9.3", date:"3/9/2026", isWatched:"Yes"},
-    {title: "Pulp Fiction", review: "8.3", date: "3/9/2026", isWatched:"Yes"},
-    {title: "The Dark Knight", review: "8.3", date: "3/9/2026", isWatched:"No"}
-]
-
-
 app.get("/", async (req, res) => {
   const movies = await getPopularMovies();
   res.render("home", { movies });
