@@ -15,14 +15,17 @@ const watchlistSchema = new mongoose.Schema({
     },
     dateAdded: {
         type: Date,
-        default: Date.now
+        default: Date.now,
+        required: true
     },
     hasWatched: {
         type: Boolean,
-        default: false
+        default: false,
+        required: true
     },
     movieId: {
-        type: Number
+        type: Number,
+        required: true
     }
     
 });
