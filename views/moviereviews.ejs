@@ -62,7 +62,7 @@
         <button type="submit">Send Review</button>
     </form>
 <% } else { %>
-    <div style="background: #eee; padding: 20px; border-radius: 8px; margin-top: 30px; text-align: center;">
+    <div style="background: #eee; padding: 20px; border-radius: 8px; margin-top: 30px; text-align: center;"> <!--If the user is not logged in, he will be prompted to log in. But he can still read the reviews-->
         <p>Want to share your thoughts? <a href="/login">Login</a> to post a review!</p>
     </div>
 <% } %>
@@ -71,9 +71,9 @@
 
   <% if (movieReviews.length > 0) { %>
     <% movieReviews.forEach(function(review) { %>
-        <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;"></div>
-        <% if (editId && String(editId) === String(review._id)) { %>
-        <form action="/update-review/<%= review._id %>/<%= movieData.id %>" method="POST">
+        <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
+        <% if (editId && String(editId) === String(review._id)) { %> <!-- Checks if the user clicked on edit-->
+        <form action="/update-review/<%= review._id %>/<%= movieData.id %>" method="POST"> <!-- Passes the new review content and the reviewId is in the parameter in the query-->
             <input type="number" name="rating" value="<%= review.rating %>" min="1" max="10" required />
             <br>
             <textarea name="description" rows="3" style="width:100%"><%= review.reviewContent %></textarea>
@@ -81,16 +81,21 @@
             <button type="submit">Save Changes</button>
             <a href="/movie-reviews/<%= movieData.id %>">Cancel</a>
         </form>
+</div>
         <% } else { %>
       
         <p><strong><%= review.username %></strong> rated it <strong><%= review.rating %>/10</strong></p>
         <p><%= review.reviewContent %></p>
         <% if (isLoggedIn && currentUser && String(review.userId) === String(currentUser.id)) { %>
             <a href="/movie-reviews/<%= movieData.id %>?editId=<%= review._id %>" 
-                           style="color: blue; text-decoration: none; margin-right: 15px; font-weight: bold;">
+                           style="color: blue; text-decoration: none; margin-right: 15px; font-weight: bold;"> <!--If the user was the one that commented, an edit button will show which allows them to 
+                                                                                                                render the same page but with the editId in the query-->
+                                                                                                                <!--This will be checked by checking the userId and whether each review in the review schema has the same id-->
+                                                                                                                <!--We do not use a form here because we are not submitting any data yet. We just want to
+                                                                                                                Refresh the page so that it shows a textbox that then allows us to send data to the database-->
                            Edit Review
                         </a>
-    <form action="/delete-review/<%= review._id %>/<%= movieData.id %>" method="POST" style="display:inline;">
+    <form action="/delete-review/<%= review._id %>/<%= movieData.id %>" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this review?');"> <!--- This allows users to delete the comment and confirms using onsubmit to check if they really want to delete-->
         <button type="submit" style="color: red; cursor: pointer;">Delete Review</button>
     </form>
 <% }} %>
