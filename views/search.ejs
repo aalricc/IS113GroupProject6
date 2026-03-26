@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Movie Search</title>
+<body>
+  <% if (isLoggedIn) { %>
+    <div class="topnav">
+      <a class="active" href="/">Home</a>
+      <a href="/watchlist">Watchlist</a>
+      <a href="/account">Account</a>
+      <a href="/logout">Logout</a>
+    </div>
+  <% } else { %>
+    <div class="topnav">
+      <a class="active" href="/">Home</a>
+      <a href="/watchlist">Watchlist</a>
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    </div>
+  <% } %>
+
+  <h1>Movie Search</h1>
+
+    <div class="search-container">
+    <form action="/search" method="GET">
+      <input type="text" name="query" placeholder="Search for a movie...">
+      <button type="submit">Search</button>
+    </form>
+  </div>
+      <% if (query == "") { %>
+         Enter a movie to get started
+         <% } else { %>
+          <%= results.length %> Results found
+          <br>
+<table border="1">
+  <tr>
+    <th>#</th>
+    <th>Poster</th>
+    <th>Title</th>
+    <th>Rating</th>
+    <th>Release Date</th>
+  </tr>
+  <% for (let i = 0; i < results.length; i++) { %>
+    <tr>
+      <td><%= i + 1 %></td>
+      <td><img src="<%= results[i]['poster'] %>" width="80"/></td>
+      <td><%= results[i]['title'] %></td>
+      <td><%= results[i]['rating'] %></td>
+      <td><%= results[i]['releaseDate'] %></td>
+    </tr>
+  <% } %>
+</table>
+        <% } %>
+        <br> 
+
+        <% if (isLoggedIn && (history.length >0)) { %>
+          <form action="/history-clear" method="post">
+            <button type="submit">Clear History</button>
+          </form>
+      <br>
+ <table border="1">
+    <tr>
+      <th>Query</th>
+      <th>Titles</th>
+      <th>Number of Results</th>
+    </tr>
+
+    <% for (let obj of history) { %>
+      <tr>
+        <!-- Query -->
+        <td><%= obj.query %></td>
+
+        <!-- Titles -->
+        <td>
+          <table border="0">
+            <% for (let movie of obj.results) { %>
+              <tr>
+                <td><%= movie.title %></td>
+              </tr>
+            <% } %>
+          </table>
+        </td>
+
+        <!-- Number of results -->
+        <td><%= obj.resultCount %></td>
+      </tr>
+    <% } %>
+  </table>
+<% } %>
+
+
+</body>
+</html>

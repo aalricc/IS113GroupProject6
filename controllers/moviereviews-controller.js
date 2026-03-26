@@ -1,45 +1,46 @@
+
 const  {getPopularMovies,searchMovies,getMovieById}  = require("../data/movies");
-const {Review,pushToDB} = require("../data/mongo")
+const {Review,pushToDB} = require("../models/moviereviews-model")
+const {User} = require("../models/user")
 
 exports.moviereviews = async (req,res) => {
+    try {
     const id = req.params.id
+    const editId = req.query.editId || null; // checks if we are allowing the user to edit
     const movieData = await getMovieById(id) // This gets data from the id that is in the query
     const movieReviews = await Review.find({ movieId: id }) 
     res.render("moviereviews",{
         movieData,
-        movieReviews
+        movieReviews,
+        editId,
+        isLoggedIn: req.session.isLoggedIn || false, // Pass the session data into the view
+        currentUser: req.session.currentUser || null
     })
+} catch(error) {
+    console.error("Error loading movie reviews:", error);
+        res.status(500).send(`Server Error: ${error}`);
+}
 }
 
 exports.postReview = async (req, res) => {
-    const id = req.params.id
-    const rating = req.body.rating;
-    
-    
-    console.log(`Rating: ${rating}, Comment: ${description}`);
-    // Here you would typically save to a database
-    res.send("Review received!");
-};
-
-
-// controllers/moviereviews-controller.js
-
-exports.postReview = async (req, res) => {
     try {
+        if (!req.session.isLoggedIn || !req.session.currentUser) {
+            return res.redirect("/login")
+        }
         const id = req.params.id; // Get ID from URL
         const { rating, description } = req.body; // Get data from EJS form
 
-        // 1. Create a new document using your Schema
+        // 1. Create a new review in the Review schema
         const newReview = new Review({
             movieId: id,
             reviewContent: description,
             rating: rating,
-            username: "Guest User", // Temporary until you have login sessions
-            userId: "12345" 
+            username: req.session.currentUser.username, // Temporary until you have login sessions
+            userId: req.session.currentUser.id
         });
 
-        // 2. Save it to MongoDB
-        await newReview.save();
+        // 2. Save the new review to MongoDB under our review schema
+        await newReview.save(); 
 
         // 3. CRITICAL: Redirect back to the movie page
         // This triggers the GET request again, which now finds the new review
@@ -54,14 +55,39 @@ exports.postReview = async (req, res) => {
 exports.deleteReview = async (req,res) => {
     try {
         const { reviewId, movieId } = req.params;
+        const review = await Review.findById(reviewId)
+ // 1. Find the review
+        if (!review) {
+            return res.status(404).send("Review not found")
+        }
+// 2. Check if the current session id and review id is the same
+        if (String(review.userId) !== String(req.session.currentUser.id)) {
+            return res.status(403).send("Unauthorised")
+        }
 
-        // 1. Tell MongoDB to find the document with this ID and remove it
+        // 3. Tell MongoDB to find the document with this ID and remove it
         await Review.findByIdAndDelete(reviewId);
 
-        // 2. Redirect back to the movie page so the user sees the updated list
+        // 4. Redirect back to the movie page so the user sees the updated list
         res.redirect(`/movie-reviews/${movieId}`);
     } catch (error) {
         console.error("Delete Error:", error);
         res.status(500).send("Could not delete the review.");
+    }
+};
+
+exports.updateReview = async (req, res) => {
+    try {
+        const { reviewId, movieId } = req.params;
+        const { rating, description } = req.body;
+
+        await Review.findOneAndUpdate(
+            { _id: reviewId, userId: req.session.currentUser.id },
+            { rating, reviewContent: description }
+        );
+
+        res.redirect(`/movie-reviews/${movieId}`);
+    } catch (error) {
+        res.status(500).send("Update failed");
     }
 };

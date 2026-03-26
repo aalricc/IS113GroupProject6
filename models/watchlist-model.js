@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const watchlistSchema = new mongoose.Schema({
-    userId: {
+    username: {
         type: String,
         required: true,
     },
@@ -15,14 +15,17 @@ const watchlistSchema = new mongoose.Schema({
     },
     dateAdded: {
         type: Date,
-        default: Date.now
+        default: Date.now,
+        required: true
     },
     hasWatched: {
         type: Boolean,
-        default: false
+        default: false,
+        required: true
     },
     movieId: {
-        type: Number
+        type: Number,
+        required: true
     }
     
 });
@@ -31,29 +34,29 @@ const Watchlist = mongoose.models.Watchlist || mongoose.model("Watchlist", watch
 
 //Methods here
 
-exports.findWatchlistByID = function(userId) {
-    return Watchlist.find({userId: userId})
+exports.findWatchlistByID = function(username) {
+    return Watchlist.find({username: username})
 }
 
 
-exports.findWatchlistbyIDandName = function(userId, movieName) {
+exports.findWatchlistbyIDandName = function(username, movieName) {
     return Watchlist.findOne( {
-        userId: userId, 
+        username: username, 
         movieName: movieName
     } )
 }
 
 
-exports.removeMovie = function(userId, movieName) {
-    return Watchlist.deleteOne({userId: userId, movieName: movieName})
+exports.removeMovie = function(username, movieName) {
+    return Watchlist.deleteOne({username: username, movieName: movieName})
 }
 
-exports.markAsWatched = function(userId, movieName) {
-    return Watchlist.updateOne({userId: userId, movieName: movieName}, {hasWatched: true}) 
+exports.markAsWatched = function(username, movieName) {
+    return Watchlist.updateOne({username: username, movieName: movieName}, {hasWatched: true}) 
 }
 
-exports.markAsUnwatched = function(userId, movieName) {
-    return Watchlist.updateOne({userId: userId, movieName: movieName}, {hasWatched: false}) 
+exports.markAsUnwatched = function(username, movieName) {
+    return Watchlist.updateOne({username: username, movieName: movieName}, {hasWatched: false}) 
 }
 
 exports.createWatchlist = function(newMovie) {

@@ -1,4 +1,5 @@
 const User = require('.././models/user');
+const bcrypt = require('bcrypt');
 
 exports.showRegisterPage = (req, res) => {
     res.render("register", {
@@ -9,7 +10,7 @@ exports.showRegisterPage = (req, res) => {
 exports.registerAttempt = async (req, res) => {
     const usernameRegister = req.body.usernameRegister;
     const emailRegister = req.body.emailRegister;
-    const passwordRegister = req.body.passwordRegister;
+    let passwordRegister = req.body.passwordRegister;
     const confirmPasswordRegister = req.body.confirmPasswordRegister;
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -37,9 +38,14 @@ exports.registerAttempt = async (req, res) => {
 
     try {
         const existingUser = await User.findOneUsername(usernameRegister);
+        const existingEmail = await User.findOneEmail(emailRegister);
 
         if (existingUser) {
             errors.push("Username already exists");
+        }
+
+        if (existingEmail) {
+            errors.push("Email already exists");
         }
 
         if (errors.length > 0) {
@@ -48,6 +54,7 @@ exports.registerAttempt = async (req, res) => {
             });
         }
 
+        passwordRegister = await bcrypt.hash(passwordRegister, 10);
         await User.createUser({
             username: usernameRegister,
             email: emailRegister,

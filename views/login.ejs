@@ -26,6 +26,11 @@
 
     <% if (falseLogin) { %>
         <h2>Invalid username or password. Register if you have not!</h2>
+        <% if (isLocked){ %>
+            <p>You have reached the maximum tries, try again in 1min</p>
+        <% } else if (triesLeft !== null) { %>
+            <p>Remaining tries before timeout: <%= triesLeft %></p>
+        <% } %>
     <% } %>
 
     <form action="/login-attempt" method="POST">
@@ -37,7 +42,7 @@
         <input id="passwordEntered" type="password" name="passwordEntered" required>
         <br/><br/>
 
-        <button type="submit">Login</button><br/><br/>
+        <button type="submit" <%= isLocked ? "disabled" : "" %>>Login</button><br/><br/>
 
         Don't have an account? <a href="/register">Click here to register today!</a>
     </form>

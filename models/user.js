@@ -14,7 +14,22 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "A user must have email"],
         unique: true
+    },
+    role: {
+        type: String,
+        default: "user",
+        enum: ['user', 'admin']
+    },
+    // added for password tries function
+    loginAttempt: {
+        type: Number,
+        default: 0
+    },
+    lockUntil: {
+        type: Date,
+        default: null
     }
+
 });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema, "users");
