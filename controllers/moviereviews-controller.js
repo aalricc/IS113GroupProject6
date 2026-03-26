@@ -30,7 +30,7 @@ exports.postReview = async (req, res) => {
         const id = req.params.id; // Get ID from URL
         const { rating, description } = req.body; // Get data from EJS form
 
-        // 1. Create a new document using your Schema
+        // 1. Create a new review in the Review schema
         const newReview = new Review({
             movieId: id,
             reviewContent: description,
@@ -39,8 +39,8 @@ exports.postReview = async (req, res) => {
             userId: req.session.currentUser.id
         });
 
-        // 2. Save it to MongoDB
-        await newReview.save();
+        // 2. Save the new review to MongoDB under our review schema
+        await newReview.save(); 
 
         // 3. CRITICAL: Redirect back to the movie page
         // This triggers the GET request again, which now finds the new review
