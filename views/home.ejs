@@ -24,22 +24,40 @@
 
   <h1>Home</h1>
   <h2>Popular Movies</h2>
+  <div class="search-container">
+    <form action="/search" method="GET">
+      <input type="text" name="query" placeholder="Search for a movie...">
+      <button type="submit">Search</button>
+    </form>
+  </div>
+  <br>
   <form action="/clear-movie-cache" method="POST">
     <button type="submit">Clear Movie Cache</button>
   </form>
 
   <div class="grid">
     <% for (let movie of movies) { %>
-    <div class="card">
-      <img src="<%= movie.poster %>" alt="<%= movie.title %>" loading="lazy" />
-      <div class="card-info">
-        <div class="card-title"><%= movie.title %></div>
-        <div class="card-meta">
-          <span class="star">★</span> <%= movie.rating.toFixed(1) %>
-          &nbsp;·&nbsp; <%= movie.releaseDate ? movie.releaseDate.slice(0,4) : "N/A" %>
+      <a href="/movie-reviews/<%= movie.id %>" style="text-decoration: none; color: inherit;">
+        <div class="card">
+          <% if (movie.poster) { %>
+            <img src="<%= movie.poster %>" alt="<%= movie.title %>" loading="lazy" />
+          <% } else { %>
+            <div style="width: 100%; min-height: 300px; display: flex; align-items: center; justify-content: center; background: #ddd;">
+              No Poster
+            </div>
+          <% } %>
+          <div class="card-info">
+            <div class="card-title"><%= movie.title %></div>
+            <div class="card-meta">
+              <span class="star">&#9733;</span>
+              <%= typeof movie.rating === "number" ? movie.rating.toFixed(1) : "N/A" %>
+              &nbsp;&middot;&nbsp;
+              <%= movie.releaseDate ? movie.releaseDate.slice(0, 4) : "N/A" %>
+            </div>
+            <p><strong>Open movie page</strong></p>
+          </div>
         </div>
-      </div>
-    </div>
+      </a>
     <% } %>
   </div>
 </body>
