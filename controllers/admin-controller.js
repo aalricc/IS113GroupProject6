@@ -38,9 +38,6 @@ exports.deleteUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
     try {
-        console.log("edit route hit");
-        console.log(req.params.id);
-        console.log(req.body);
 
         const id = req.params.id;
         const { username, email } = req.body;
@@ -50,7 +47,7 @@ exports.updateUser = async (req, res) => {
             { username, email },
             { runValidators: true }
         );
-
+        res.send('Update successful!')
         res.redirect("/admin-page");
     } catch (error) {
         console.error("Error updating user", error);
