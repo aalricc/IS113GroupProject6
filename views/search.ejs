@@ -45,6 +45,7 @@
   <% for (let i = 0; i < results.length; i++) { %>
     <tr>
       <td><%= i + 1 %></td>
+      <a><a href="/movie-reviews/<%= movie.id %>" style="text-decoration: none; color: inherit;"></a>
       <td><img src="<%= results[i]['poster'] %>" width="80"/></td>
       <td><%= results[i]['title'] %></td>
       <td><%= results[i]['rating'] %></td>
