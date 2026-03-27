@@ -1,17 +1,12 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const { Review } = require("../models/moviereviews-model");
+const { MovieCache } = require("../models/movie-cache-model");
+const dns = require('dns');
+dns.setServers(['8.8.8.8']);
 dotenv.config({path: "./config.env"});
-async function connectDB() {
-    
-    try {
-        await mongoose.connect(process.env.DB);
-        console.log("MongoDB connected successfully");
-    } catch (error) {
-        console.error("MongoDB connection failed:", error.message);
-        process.exit(1);
-    }
-};
 
+let connectionPromise;
 
 async function connectDB() {
     try {
@@ -21,7 +16,19 @@ async function connectDB() {
         console.error("MongoDB connection failed:", error.message);
         process.exit(1);
     }
-};
+
+    if (!connectionPromise) {
+        connectionPromise = mongoose.connect(process.env.DB).then(() => {
+            console.log("MongoDB connected successfully");
+            return mongoose.connection;
+        }).catch((error) => {
+            connectionPromise = null;
+            throw error;
+        });
+    }
+
+    return connectionPromise;
+}
 
 async function pushToDB(Model, data) {
     await connectDB();
@@ -49,41 +56,13 @@ async function deleteFromDB(Model, filter) {
     return await Model.deleteOne(filter);
 }
 
-const reviewSchema = new mongoose.Schema({
-    movieId: String,
-    reviewContent: String,
-    rating: String,
-    userId: String,
-    username: String
-});
-
-const movieCacheSchema = new mongoose.Schema({
-    cacheKey: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    movies: {
-        type: Array,
-        default: []
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now
-    }
-});
-
-const User = mongoose.models.User || mongoose.model("User", userSchema);
-const Review = mongoose.models.Review || mongoose.model("Review", reviewSchema);
-const MovieCache = mongoose.models.MovieCache || mongoose.model("MovieCache", movieCacheSchema);
-
 module.exports = {
+    connectDB,
     pushToDB,
     readFromDB,
     readOneFromDB,
     updateInDB,
     deleteFromDB,
-    User,
     Review,
-    MovieCache,
+    MovieCache
 };

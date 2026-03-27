@@ -6,29 +6,20 @@ const mongoose = require('mongoose');
 const loginRoutes = require("./routes/login-routes");
 const registerRoutes = require("./routes/register-routes");
 const accountRoutes = require("./routes/account-routes");
-const watchListRoutes = require('./routes/watchlist-routes');
-const moviereviewsRoutes = require('./routes/moviereviews-routes');
-const adminRoutes = require('./routes/admin-routes');
-const searchRoutes = require("./routes/search-route")
-
-dotenv.config({path: "./config.env"});
-
+const watchListRoutes = require("./routes/watchlist-routes");
+const moviereviewsRoutes = require("./routes/moviereviews-routes");
 const app = express();
 const path = require('path');
-const { getPopularMovies } = require("./data/movies");
-app.set("view engine", "ejs");
-app.use(express.urlencoded({ extended: true }));
+const { getPopularMovies, clearPopularMoviesCache } = require("./data/movies");
+const { connectDB } = require("./data/mongo");
 
-// secret: signs the session cookie
-// resave: false: avoids saving unchanged sessions
-// saveUninitialized: false: don’t create empty sessions for everyone
+app.set("view engine", "ejs");
+app.use(express.urlencoded({extended: true}));
 app.use(session({
     secret: process.env.SECRET,
     resave: false,
-    saveUninitialized: false,
-  }),
-);
-
+    saveUninitialized: false
+}));
 app.use((req, res, next) => {
   res.locals.isLoggedIn = req.session.isLoggedIn || false;
   res.locals.currentUser = req.session.currentUser || null;
@@ -36,14 +27,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// use routes
-app.use("/", loginRoutes);
+app.use("/", loginRoutes);  
 app.use("/", registerRoutes);
 app.use("/", accountRoutes);
-app.use("/", adminRoutes);
-app.use('/', moviereviewsRoutes);
+app.use("/", moviereviewsRoutes);
 app.use('/watchlist', watchListRoutes);
-app.use("/", searchRoutes);
 
 //Routes
 app.get("/", async (req, res) => {
@@ -63,10 +51,8 @@ async function connectDB() {
 
   
 function startServer() {
-  const hostname = "localhost"; // Define server hostname
-  const port = 8000; // Define port number
-
-  // Start the server and listen on the specified hostname and port
+  const hostname = "localhost";
+  const port = 8000;
   app.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
   });
@@ -74,3 +60,18 @@ function startServer() {
 
 connectDB().then(startServer);
 
+
+app.get("/", async (req, res) => {
+  const movies = await getPopularMovies();
+  res.render("home", { movies });
+});
+
+app.post("/clear-movie-cache", async (req, res) => {
+  try {
+    await clearPopularMoviesCache();
+    res.redirect("/");
+  } catch (error) {
+    console.log("Error clearing movie cache:", error);
+    res.status(500).send("Failed to clear movie cache");
+  }
+});

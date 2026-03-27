@@ -1,6 +1,9 @@
+const dotenv = require("dotenv");
 const { MovieCache, pushToDB, readOneFromDB, updateInDB, deleteFromDB } = require("./mongo");
 
-const TMDB_API_KEY = "1a5d529ccb58f5db5d1c537364032cd0";
+dotenv.config({ path: "./config.env" });
+
+const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const BASE_URL = "https://api.themoviedb.org/3";
 const POPULAR_MOVIES_CACHE_KEY = "popular_movies";
 const CACHE_DURATION_MS = 24 * 60 * 60 * 1000;
@@ -24,6 +27,20 @@ function isCacheExpired(cacheEntry) {
   return Date.now() - new Date(cacheEntry.updatedAt).getTime() > CACHE_DURATION_MS;
 }
 
+async function fetchJson(url) {
+  if (!TMDB_API_KEY) {
+    throw new Error("TMDB_API_KEY is not configured.");
+  }
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`TMDB request failed with status ${response.status}`);
+  }
+
+  return response.json();
+}
+
 async function fetchAndCache() {
   const existingCache = await readOneFromDB(MovieCache, {
     cacheKey: POPULAR_MOVIES_CACHE_KEY
@@ -33,8 +50,7 @@ async function fetchAndCache() {
     return existingCache.movies;
   }
 
-  const response = await fetch(`${BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
-  const data = await response.json();
+  const data = await fetchJson(`${BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
   const movies = (data.results || []).map(movie => normaliseMovie(movie));
 
   if (existingCache) {
@@ -68,20 +84,19 @@ async function clearPopularMoviesCache() {
 // for movie page 
 async function getMovieById(id) {
   const movies = await fetchAndCache();
-  const cached = movies.find(m => m.id === parseInt(id));
+  const numericId = Number.parseInt(id, 10);
+  const cached = movies.find(m => m.id === numericId);
   if (cached) return cached;
 
   // if not in cache 
-  const response = await fetch(`${BASE_URL}/movie/${id}?api_key=${TMDB_API_KEY}&language=en-US`);
-  const movie = await response.json();
+  const movie = await fetchJson(`${BASE_URL}/movie/${id}?api_key=${TMDB_API_KEY}&language=en-US`);
   return normaliseMovie(movie);
 }
 
 // for search
 async function searchMovies(query) {
-  const response = await fetch(`${BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`);
-  const data = await response.json();
-  return data.results.map(movie => normaliseMovie(movie));
+  const data = await fetchJson(`${BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`);
+  return (data.results || []).map(movie => normaliseMovie(movie));
 }
 
 module.exports = {getPopularMovies, clearPopularMoviesCache, getMovieById, searchMovies };
