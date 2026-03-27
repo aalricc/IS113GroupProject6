@@ -11,7 +11,7 @@ const moviereviewsRoutes = require("./routes/moviereviews-routes");
 const app = express();
 const path = require('path');
 const { getPopularMovies, clearPopularMoviesCache } = require("./data/movies");
-const { connectDB } = require("./data/mongo");
+// const { connectDB } = require("./data/mongo");
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({extended: true}));
