@@ -39,9 +39,15 @@
             <form action="/watchlist/createMovie" method="post">
             <h2><%= movieData.title %></h2>
             <p><strong>Release Date:</strong> <%= movieData.releaseDate %></p>
-            <p><strong>TMDB Average Rating:</strong> <%= movieData.rating %> / 10</p>
+            <p><strong>Community Average Rating:</strong> 
+                <% if (averageRating !== null) { %>
+                    <%= averageRating %> / 10
+                <% } else { %>
+                    No reviews yet
+                <% } %>
+            </p>
             <p><strong>Overview:</strong><br><%= movieData.overview %></p>
-            <input type="hidden" name="movie" value="<%=movieData.title%>">
+            <input type="hidden" name="movie" value="<%=movieData.title%>"> <!--Input hidden sends data to watchlist-->
             <input type="hidden" name="rating" value="<%=movieData.rating%>">
             <input type="hidden" name="id" value="<%=movieData.id%>">
             <button type="submit">Add to Watchlist</button>
