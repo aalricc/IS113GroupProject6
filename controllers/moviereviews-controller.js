@@ -1,15 +1,32 @@
-
-const  {getPopularMovies,searchMovies,getMovieById}  = require("../data/movies");
-const {Review,pushToDB} = require("../models/moviereviews-model")
-const {User} = require("../models/user")
+const { getMovieById, getMovieTrailer } = require("../data/movies");
+const { Review } = require("../models/moviereviews-model");
+const MovieTrailer = require("../models/movie-trailer-model");
 const MovieStats = require('../models/moviestats-model');
+
+function formatTrailer(trailer) {
+    if (!trailer || !trailer.youtubeKey) {
+        return null;
+    }
+
+    return {
+        trailerName: trailer.trailerName,
+        youtubeKey: trailer.youtubeKey,
+        url: `https://www.youtube.com/watch?v=${trailer.youtubeKey}`,
+        embedUrl: `https://www.youtube.com/embed/${trailer.youtubeKey}`
+    };
+}
 
 exports.moviereviews = async (req,res) => {
     try {
     const id = req.params.id
     const editId = req.query.editId || null; // checks if we are allowing the user to edit
     const movieData = await getMovieById(id) // This gets data from the id that is in the query
-    const movieReviews = await Review.find({ movieId: id }) 
+    const movieReviews = await Review.find({ movieId: id })
+    const savedTrailer = await MovieTrailer.findOne({ movieId: id }).lean();
+    const hasSavedTrailer = !!savedTrailer;
+    const movieTrailer = hasSavedTrailer
+        ? formatTrailer(savedTrailer)
+        : formatTrailer(await getMovieTrailer(movieData.title, id));
     let averageRating = null; 
         if (movieReviews.length > 0) {
             // .reduce() adds up all the ratings in the array
@@ -30,7 +47,9 @@ exports.moviereviews = async (req,res) => {
         currentUser: req.session.currentUser || null,
         isAdmin: req.session.isAdmin || false,
         viewCount: stats.viewCount,
-        averageRating
+        averageRating,
+        movieTrailer,
+        hasSavedTrailer
     })
 } catch(error) {
     console.error("Error loading movie reviews:", error);
@@ -127,5 +146,80 @@ exports.updateReview = async (req, res) => {
         res.redirect(`/movie-reviews/${movieId}`);
     } catch (error) {
         res.status(500).send("Update failed");
+    }
+};
+
+exports.createTrailer = async (req, res) => {
+    try {
+        const { movieId } = req.params;
+        const { movieName } = req.body;
+        const existingTrailer = await MovieTrailer.findOne({ movieId });
+
+        if (existingTrailer) {
+            return res.redirect(`/movie-reviews/${movieId}`);
+        }
+
+        const trailer = await getMovieTrailer(movieName, movieId);
+
+        if (!trailer) {
+            return res.redirect(`/movie-reviews/${movieId}`);
+        }
+
+        await MovieTrailer.create({
+            movieId,
+            movieName,
+            trailerName: trailer.trailerName,
+            youtubeKey: trailer.youtubeKey
+        });
+
+        res.redirect(`/movie-reviews/${movieId}`);
+    } catch (error) {
+        console.error("Error saving trailer:", error);
+        res.status(500).send("Could not save trailer.");
+    }
+};
+
+exports.updateTrailer = async (req, res) => {
+    try {
+        const { movieId } = req.params;
+        const { movieName } = req.body;
+        const existingTrailer = await MovieTrailer.findOne({ movieId });
+
+        if (!existingTrailer) {
+            return res.redirect(`/movie-reviews/${movieId}`);
+        }
+
+        const trailer = await getMovieTrailer(movieName, movieId);
+
+        if (!trailer) {
+            return res.redirect(`/movie-reviews/${movieId}`);
+        }
+
+        await MovieTrailer.findOneAndUpdate(
+            { movieId },
+            {
+                movieName,
+                trailerName: trailer.trailerName,
+                youtubeKey: trailer.youtubeKey
+            }
+        );
+
+        res.redirect(`/movie-reviews/${movieId}`);
+    } catch (error) {
+        console.error("Error updating trailer:", error);
+        res.status(500).send("Could not update trailer.");
+    }
+};
+
+exports.deleteTrailer = async (req, res) => {
+    try {
+        const { movieId } = req.params;
+
+        await MovieTrailer.findOneAndDelete({ movieId });
+
+        res.redirect(`/movie-reviews/${movieId}`);
+    } catch (error) {
+        console.error("Error deleting trailer:", error);
+        res.status(500).send("Could not delete trailer.");
     }
 };
