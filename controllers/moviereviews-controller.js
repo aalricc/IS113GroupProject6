@@ -20,7 +20,7 @@ exports.moviereviews = async (req,res) => {
     const stats = await MovieStats.findOneAndUpdate(
             { movieId: id },          // Find the movie by its ID
             { $inc: { viewCount: 1 } },    // Increment viewCount by 1
-            { new: true, upsert: true }    // 'new' returns the updated doc, 'upsert' creates it if it doesn't exist
+            { returnDocument: 'after', upsert: true }   // 'new' returns the updated doc, 'upsert' creates it if it doesn't exist
         );
     res.render("moviereviews",{
         movieData,
@@ -28,6 +28,7 @@ exports.moviereviews = async (req,res) => {
         editId,
         isLoggedIn: req.session.isLoggedIn || false, // Pass the session data into the view
         currentUser: req.session.currentUser || null,
+        isAdmin: req.session.isAdmin || false,
         viewCount: stats.viewCount,
         averageRating
     })
@@ -75,15 +76,22 @@ exports.deleteReview = async (req,res) => {
         if (!review) {
             return res.status(404).send("Review not found")
         }
+
 // 2. Check if the current session id and review id is the same
         if (String(review.userId) !== String(req.session.currentUser.id)) {
             return res.status(403).send("Unauthorised")
         }
+        // 3. // checks in the backend for security
+const isOwner = String(review.userId) === String(req.session.currentUser.id);
+   const isAdmin = req.session.isAdmin === true;
 
-        // 3. Tell MongoDB to find the document with this ID and remove it
+        if (!isOwner && !isAdmin) {
+            return res.status(403).send("Unauthorised")
+        }
+        // 4. Tell MongoDB to find the document with this ID and remove it
         await Review.findByIdAndDelete(reviewId);
 
-        // 4. Redirect back to the movie page so the user sees the updated list
+        // 5. Redirect back to the movie page so the user sees the updated list
         res.redirect(`/movie-reviews/${movieId}`);
     } catch (error) {
         console.error("Delete Error:", error);
@@ -96,8 +104,23 @@ exports.updateReview = async (req, res) => {
         const { reviewId, movieId } = req.params;
         const { rating, description } = req.body;
 
-        await Review.findOneAndUpdate(
-            { _id: reviewId, userId: req.session.currentUser.id },
+        // 1. Find the review
+       const review = await Review.findById(reviewId);
+        if (!review) {
+            return res.status(404).send("Review not found");
+        }
+
+        // 2. Verify permissions (Owner OR Admin)
+        const isOwner = String(review.userId) === String(req.session.currentUser.id);
+        const isAdmin = req.session.isAdmin === true;
+
+        if (!isOwner && !isAdmin) {
+            return res.status(403).send("Unauthorised");
+        }
+
+        // 3. Update the review since authorization passed
+        await Review.findByIdAndUpdate(
+            reviewId, 
             { rating, reviewContent: description }
         );
 

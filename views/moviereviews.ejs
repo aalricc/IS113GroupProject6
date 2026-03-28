@@ -95,7 +95,7 @@
       
         <p><strong><%= review.username %></strong> rated it <strong><%= review.rating %>/10</strong></p>
         <p><%= review.reviewContent %></p>
-        <% if (isLoggedIn && currentUser && String(review.userId) === String(currentUser.id)) { %>
+        <% if (isLoggedIn && currentUser && (String(review.userId) === String(currentUser.id)|| isAdmin)) { %>
             <a href="/movie-reviews/<%= movieData.id %>?editId=<%= review._id %>" 
                            style="color: blue; text-decoration: none; margin-right: 15px; font-weight: bold;"> <!--If the user was the one that commented, an edit button will show which allows them to 
                                                                                                                 render the same page but with the editId in the query-->
