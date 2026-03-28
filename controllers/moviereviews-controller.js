@@ -2,6 +2,7 @@
 const  {getPopularMovies,searchMovies,getMovieById}  = require("../data/movies");
 const {Review,pushToDB} = require("../models/moviereviews-model")
 const {User} = require("../models/user")
+const MovieStats = require('../models/moviestats-model');
 
 exports.moviereviews = async (req,res) => {
     try {
@@ -9,12 +10,18 @@ exports.moviereviews = async (req,res) => {
     const editId = req.query.editId || null; // checks if we are allowing the user to edit
     const movieData = await getMovieById(id) // This gets data from the id that is in the query
     const movieReviews = await Review.find({ movieId: id }) 
+    const stats = await MovieStats.findOneAndUpdate(
+            { movieId: id },          // Find the movie by its ID
+            { $inc: { viewCount: 1 } },    // Increment viewCount by 1
+            { new: true, upsert: true }    // 'new' returns the updated doc, 'upsert' creates it if it doesn't exist
+        );
     res.render("moviereviews",{
         movieData,
         movieReviews,
         editId,
         isLoggedIn: req.session.isLoggedIn || false, // Pass the session data into the view
-        currentUser: req.session.currentUser || null
+        currentUser: req.session.currentUser || null,
+        viewCount: stats.viewCount
     })
 } catch(error) {
     console.error("Error loading movie reviews:", error);

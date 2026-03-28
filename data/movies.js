@@ -3,7 +3,7 @@ const { MovieCache, pushToDB, readOneFromDB, updateInDB, deleteFromDB } = requir
 
 dotenv.config({ path: "./config.env" });
 
-const TMDB_API_KEY = process.env.TMDB_API_KEY;
+const TMDB_API_KEY = "1a5d529ccb58f5db5d1c537364032cd0";
 const BASE_URL = "https://api.themoviedb.org/3";
 const POPULAR_MOVIES_CACHE_KEY = "popular_movies";
 const CACHE_DURATION_MS = 24 * 60 * 60 * 1000;
