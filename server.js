@@ -12,7 +12,6 @@ const searchRoute = require("./routes/search-route")
 const app = express();
 const path = require('path');
 const { getPopularMovies, clearPopularMoviesCache } = require("./data/movies");
-// const { connectDB } = require("./data/mongo");
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({extended: true}));
@@ -51,7 +50,7 @@ async function connectDB() {
     }
 };
 
-  
+
 function startServer() {
   const hostname = "localhost";
   const port = 8000;

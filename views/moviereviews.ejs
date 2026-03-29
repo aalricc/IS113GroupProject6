@@ -39,15 +39,57 @@
             <form action="/watchlist/createMovie" method="post">
             <h2><%= movieData.title %></h2>
             <p><strong>Release Date:</strong> <%= movieData.releaseDate %></p>
-            <p><strong>TMDB Average Rating:</strong> <%= movieData.rating %> / 10</p>
+            <p><strong>Community Average Rating:</strong> 
+                <% if (averageRating !== null) { %>
+                    <%= averageRating %> / 10
+                <% } else { %>
+                    No reviews yet
+                <% } %>
+            </p>
             <p><strong>Overview:</strong><br><%= movieData.overview %></p>
-            <input type="hidden" name="movie" value="<%=movieData.title%>">
+            <input type="hidden" name="movie" value="<%=movieData.title%>"> <!--Input hidden sends data to watchlist-->
             <input type="hidden" name="rating" value="<%=movieData.rating%>">
             <input type="hidden" name="id" value="<%=movieData.id%>">
             <button type="submit">Add to Watchlist</button>
             </form>
+            <div style="margin-top: 20px;">
+                <h3>Trailer</h3>
+                <% if (movieTrailer) { %>
+                    <iframe
+                        width="420"
+                        height="236"
+                        src="<%= movieTrailer.embedUrl %>"
+                        title="<%= movieTrailer.trailerName %>"
+                        allowfullscreen
+                    ></iframe>
+                    <br>
+                    <a href="<%= movieTrailer.url %>" target="_blank">Open on YouTube</a>
+                <% } else { %>
+                    <p>No trailer found.</p>
+                <% } %>
+
+                <% if (isLoggedIn && movieTrailer) { %>
+                    <% if (hasSavedTrailer) { %>
+                        <form action="/update-trailer/<%= movieData.id %>" method="POST" style="display:inline;">
+                            <input type="hidden" name="movieName" value="<%= movieData.title %>">
+                            <button type="submit">Update Trailer</button>
+                        </form>
+                        <form action="/delete-trailer/<%= movieData.id %>" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this trailer?');">
+                            <button type="submit">Delete Trailer</button>
+                        </form>
+                    <% } else { %>
+                        <form action="/movie-trailer/<%= movieData.id %>" method="POST">
+                            <input type="hidden" name="movieName" value="<%= movieData.title %>">
+                            <button type="submit">Save Trailer</button>
+                        </form>
+                    <% } %>
+                <% } %>
+            </div>
         </div>
     </div>
+    <div class="movie-stats">
+    <p>👁️ Views: <%= viewCount %></p>
+</div>
 
 
    <% if (isLoggedIn) { %>
@@ -86,7 +128,7 @@
       
         <p><strong><%= review.username %></strong> rated it <strong><%= review.rating %>/10</strong></p>
         <p><%= review.reviewContent %></p>
-        <% if (isLoggedIn && currentUser && String(review.userId) === String(currentUser.id)) { %>
+        <% if (isLoggedIn && currentUser && (String(review.userId) === String(currentUser.id)|| isAdmin)) { %>
             <a href="/movie-reviews/<%= movieData.id %>?editId=<%= review._id %>" 
                            style="color: blue; text-decoration: none; margin-right: 15px; font-weight: bold;"> <!--If the user was the one that commented, an edit button will show which allows them to 
                                                                                                                 render the same page but with the editId in the query-->
