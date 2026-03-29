@@ -1,7 +1,7 @@
 const dotenv = require("dotenv");
 const { MovieCache, pushToDB, readOneFromDB, updateInDB, deleteFromDB } = require("./mongo");
 
-dotenv.config({ path: "../config.env" });
+dotenv.config({ path: "./config.env" });
 
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const BASE_URL = "https://api.themoviedb.org/3";

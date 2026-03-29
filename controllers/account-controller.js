@@ -208,8 +208,11 @@ exports.changePassword = async (req, res) => {
             errors.push("All fields are required.");
         }
 
-        if (currentPassword !== user.password) {
-            errors.push("Current password is incorrect.");
+        const bcrypt = require("bcrypt");
+
+        const match = await bcrypt.compare(currentPassword, user.password);
+        if (!match) {
+        errors.push("Current password is incorrect.");
         }
 
         if (newPassword.length < 6) {
@@ -233,9 +236,8 @@ exports.changePassword = async (req, res) => {
         }
 
         // update password in db
-        user.password = newPassword;
+        user.password = await bcrypt.hash(newPassword, 10);
         await user.save();
-
         return res.render("change-password", {
             user,
             errors: [],

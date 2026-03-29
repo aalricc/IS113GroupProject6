@@ -6,7 +6,7 @@ exports.showWatchlist = async (req, res) => {
 
     try {
         if (!req.session.currentUser || !req.session.currentUser.username) {
-            res.render("watchlist", { isLoggedIn: false, watchList: "", msg: "" })
+             return res.render("watchlist", { isLoggedIn: false, watchList: "", msg: "" })
         }
         else {
             let watchList = await Movie.findWatchlistByID(req.session.currentUser.username); 
@@ -32,9 +32,8 @@ exports.removeMovie = async (req, res) => {
 
     catch (error) {
         console.error(error);
-        res.send("Failed to remove movie");
+        return res.send("Failed to remove movie");
     }
-
     res.redirect("/watchlist")
 }
 
@@ -117,7 +116,8 @@ exports.createWatchlist = async (req, res) => {
     }
 
     catch (error) {
-        console.log("Error adding movie to watchlist")
+        console.log("Error adding movie to watchlist", error);
+        res.send("Error adding movie to watchlist");
     }
 
 

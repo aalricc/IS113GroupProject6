@@ -47,7 +47,7 @@ exports.updateUser = async (req, res) => {
             { username, email },
             { runValidators: true }
         );
-        res.send('Update successful!')
+      //  res.send('Update successful!')
         res.redirect("/admin-page");
     } catch (error) {
         console.error("Error updating user", error);

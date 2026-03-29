@@ -96,13 +96,9 @@ exports.deleteReview = async (req,res) => {
             return res.status(404).send("Review not found")
         }
 
-// 2. Check if the current session id and review id is the same
-        if (String(review.userId) !== String(req.session.currentUser.id)) {
-            return res.status(403).send("Unauthorised")
-        }
         // 3. // checks in the backend for security
-const isOwner = String(review.userId) === String(req.session.currentUser.id);
-   const isAdmin = req.session.isAdmin === true;
+        const isOwner = String(review.userId) === String(req.session.currentUser.id);
+        const isAdmin = req.session.isAdmin === true;
 
         if (!isOwner && !isAdmin) {
             return res.status(403).send("Unauthorised")
