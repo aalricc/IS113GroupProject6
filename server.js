@@ -8,6 +8,7 @@ const registerRoutes = require("./routes/register-routes");
 const accountRoutes = require("./routes/account-routes");
 const watchListRoutes = require("./routes/watchlist-routes");
 const moviereviewsRoutes = require("./routes/moviereviews-routes");
+const searchRoute = require("./routes/search-route")
 const app = express();
 const path = require('path');
 const { getPopularMovies, clearPopularMoviesCache } = require("./data/movies");
@@ -31,6 +32,7 @@ app.use("/", registerRoutes);
 app.use("/", accountRoutes);
 app.use("/", moviereviewsRoutes);
 app.use('/watchlist', watchListRoutes);
+app.use('/', searchRoute);
 
 //Routes
 app.get("/", async (req, res) => {
