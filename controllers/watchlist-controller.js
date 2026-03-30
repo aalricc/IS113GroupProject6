@@ -79,7 +79,6 @@ exports.createWatchlist = async (req, res) => {
         }
 
         else {
-            let user_id = "u123";
             const name = req.body.movie;
             const rating = req.body.rating;
             const id = req.body.id

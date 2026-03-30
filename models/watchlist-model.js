@@ -11,7 +11,6 @@ const watchlistSchema = new mongoose.Schema({
     },
     rating: {
         type: Number,
-        required: true
     },
     dateAdded: {
         type: Date,

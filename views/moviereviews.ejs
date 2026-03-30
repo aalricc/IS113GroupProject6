@@ -48,7 +48,7 @@
             </p>
             <p><strong>Overview:</strong><br><%= movieData.overview %></p>
             <input type="hidden" name="movie" value="<%=movieData.title%>"> <!--Input hidden sends data to watchlist-->
-            <input type="hidden" name="rating" value="<%=movieData.rating%>">
+            <input type="hidden" name="rating" value="<%=averageRating%>">
             <input type="hidden" name="id" value="<%=movieData.id%>">
             <button type="submit">Add to Watchlist</button>
             </form>
