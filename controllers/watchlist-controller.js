@@ -1,4 +1,4 @@
-const fs = require('fs/promises');
+
 
 const Watchlist = require('./../models/watchlist-model');
 

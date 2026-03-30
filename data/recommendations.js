@@ -204,10 +204,8 @@ async function getRecommendedMovies(currentUser, movies) {
         const recommendationScore = getMovieRecommendationScore(movie, genreScores);
 
         if (recommendationScore > 0) {
-            recommendedMovies.push({
-                ...movie,
-                recommendationScore: recommendationScore
-            });
+            movie.recommendationScore = recommendationScore;
+            recommendedMovies.push(movie);
         }
     }
 
@@ -222,4 +220,4 @@ async function getRecommendedMovies(currentUser, movies) {
     return recommendedMovies.slice(0, 6);
 }
 
-module.exports = { getRecommendedMovies };
+module.exports = { getRecommendedMovies, getLinearRegressionPrediction };

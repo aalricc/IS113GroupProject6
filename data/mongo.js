@@ -5,8 +5,6 @@ const dns = require('dns');
 dns.setServers(['8.8.8.8']);
 
 
-let connectionPromise;
-
 async function connectDB() {
     try {
         await mongoose.connect(process.env.DB);
