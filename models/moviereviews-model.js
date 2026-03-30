@@ -27,13 +27,27 @@ const reviewSchema = new mongoose.Schema(
             required: true
         }
     },
-    {
-        timestamps: true
-    }
 );
 
 const Review = mongoose.models.Review || mongoose.model("Review", reviewSchema);
 
-module.exports = {
-    Review
+//methods
+exports.findReviewsByMovieId = function(movieId) {
+    return Review.find({ movieId: movieId });
+};
+
+exports.createReview = function(reviewData) {
+    return Review.create(reviewData);
+};
+
+exports.findReviewById = function(reviewId) {
+    return Review.findById(reviewId);
+};
+
+exports.deleteReviewById = function(reviewId) {
+    return Review.findByIdAndDelete(reviewId);
+};
+
+exports.updateReviewById = function(reviewId, updateData) {
+    return Review.findByIdAndUpdate(reviewId, updateData);
 };

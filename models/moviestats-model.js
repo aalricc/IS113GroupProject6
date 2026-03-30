@@ -52,7 +52,34 @@ const MovieStats = mongoose.model('MovieStats', movieStatsSchema);
 const UserView = mongoose.model('UserView', userViewSchema);
 
 // 2. Export them together as an object
-module.exports = {
-    MovieStats,
-    UserView
+// --- Controller Methods ---
+
+// 1. Updates the average rating and total reviews
+exports.updateMovieRatingStats = function(movieId, averageRating, totalReviews) {
+    return MovieStats.findOneAndUpdate(
+        { movieId: movieId },
+        { averageRating: averageRating, totalReviews: totalReviews },
+        { returnDocument: 'after', upsert: true }
+    );
 };
+
+// 2. Increments the global view count for a movie
+exports.incrementGlobalViews = function(movieId) {
+    return MovieStats.findOneAndUpdate(
+        { movieId: movieId },
+        { $inc: { viewCount: 1 } },
+        { returnDocument: 'after', upsert: true }
+    );
+};
+
+// 3. Increments the view count for a specific user on a specific movie
+exports.incrementUserViews = function(userId, movieId) {
+    return UserView.findOneAndUpdate(
+        { userId: userId, movieId: movieId },
+        { $inc: { viewCount: 1 } },
+        { returnDocument: 'after', upsert: true }
+    );
+};
+
+exports.MovieStats = MovieStats;
+exports.UserView = UserView;
