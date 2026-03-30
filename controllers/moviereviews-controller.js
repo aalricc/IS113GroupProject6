@@ -2,6 +2,7 @@ const { getMovieById, getMovieTrailer } = require("../data/movies");
 const { Review } = require("../models/moviereviews-model");
 const MovieTrailer = require("../models/movie-trailer-model");
 const { MovieStats, UserView } = require('../models/moviestats-model');
+const Watchlist = require('./../models/watchlist-model');
 
 function formatTrailer(trailer) {
     if (!trailer || !trailer.youtubeKey) {
@@ -24,7 +25,7 @@ async function updateMovieAverage(movieId) {
     if (totalReviews > 0) {
         const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
         // .toFixed(1) turns it into a string, so we wrap it in Number() to save it properly to MongoDB
-        averageRating = Number((totalRating / totalReviews).toFixed(1)); 
+        averageRating = Number((totalRating / totalReviews).toFixed(1));
     }
 
     // Save the new math to the MovieStats document
@@ -33,6 +34,9 @@ async function updateMovieAverage(movieId) {
         { averageRating: averageRating, totalReviews: totalReviews },
         { returnDocument: 'after', upsert: true }
     );
+    let updateWatchlistRating = await Watchlist.updateMovieRating(movieId, averageRating)
+
+
 }
 
 exports.moviereviews = async (req,res) => {
