@@ -1,7 +1,7 @@
 const { getMovieById, getMovieTrailer } = require("../data/movies");
-const { Review } = require("../models/moviereviews-model");
+const Review = require("../models/moviereviews-model");
 const MovieTrailer = require("../models/movie-trailer-model");
-const { MovieStats, UserView } = require('../models/moviestats-model');
+const StatsModel = require('../models/moviestats-model');
 const Watchlist = require('./../models/watchlist-model');
 
 function formatTrailer(trailer) {
@@ -18,7 +18,7 @@ function formatTrailer(trailer) {
 }
 
 async function updateMovieAverage(movieId) {
-    const reviews = await Review.find({ movieId: movieId });
+    const reviews = await Review.findReviewsByMovieId(movieId);
     let averageRating = null;
     let totalReviews = reviews.length;
 
@@ -29,11 +29,7 @@ async function updateMovieAverage(movieId) {
     }
 
     // Save the new math to the MovieStats document
-    await MovieStats.findOneAndUpdate(
-        { movieId: movieId },
-        { averageRating: averageRating, totalReviews: totalReviews },
-        { returnDocument: 'after', upsert: true }
-    );
+    await StatsModel.updateMovieRatingStats(movieId, averageRating, totalReviews);
     let updateWatchlistRating = await Watchlist.updateMovieRating(movieId, averageRating)
 
 
@@ -44,27 +40,16 @@ exports.moviereviews = async (req,res) => {
     const id = req.params.id
     const editId = req.query.editId || null; // checks if we are allowing the user to edit
     const movieData = await getMovieById(id) // This gets data from the id that is in the query
-    const movieReviews = await Review.find({ movieId: id })
+    const movieReviews = await Review.findReviewsByMovieId(id);
     const savedTrailer = await MovieTrailer.findOne({ movieId: id }).lean();
     const hasSavedTrailer = !!savedTrailer;
     const movieTrailer = hasSavedTrailer
         ? formatTrailer(savedTrailer)
         : formatTrailer(await getMovieTrailer(movieData.title, id));
-    const stats = await MovieStats.findOneAndUpdate(
-            { movieId: id },          // Find the movie by its ID
-            { $inc: { viewCount: 1 } },    // Increment viewCount by 1
-            { returnDocument: 'after', upsert: true }   // returndocument returns the document AFTER you have updated it, 'upsert' is a combination of update and insert. If it is not there it will insert, but if it is insde already then it will update)
-        );
+    const stats = await StatsModel.incrementGlobalViews(id);
         // Update Specific User Views (Only if logged in)
         if (req.session.isLoggedIn && req.session.currentUser) {
-            await UserView.findOneAndUpdate(
-                { 
-                    userId: req.session.currentUser.id, 
-                    movieId: id 
-                },
-                { $inc: { viewCount: 1 } },
-                { returnDocument: 'after', upsert: true } 
-            );
+            await StatsModel.incrementUserViews(req.session.currentUser.id, id);
         }
     res.render("moviereviews",{
         movieData,
@@ -93,16 +78,15 @@ exports.postReview = async (req, res) => {
         const { rating, description } = req.body; // Get data from EJS form
 
         // 1. Create a new review in the Review schema
-        const newReview = new Review({
+        await Review.createReview({
             movieId: id,
             reviewContent: description,
             rating: rating,
-            username: req.session.currentUser.username, // Temporary until you have login sessions
+            username: req.session.currentUser.username, 
             userId: req.session.currentUser.id
         });
 
         // 2. Save the new review to MongoDB under our review schema
-        await newReview.save(); 
         await updateMovieAverage(id); // Update the movie average rating
 
         // 3. CRITICAL: Redirect back to the movie page
@@ -118,7 +102,7 @@ exports.postReview = async (req, res) => {
 exports.deleteReview = async (req,res) => {
     try {
         const { reviewId, movieId } = req.params;
-        const review = await Review.findById(reviewId)
+        const review = await Review.findReviewById(reviewId);
  // 1. Find the review
         if (!review) {
             return res.status(404).send("Review not found")
@@ -132,7 +116,7 @@ exports.deleteReview = async (req,res) => {
             return res.status(403).send("Unauthorised")
         }
         // 4. Tell MongoDB to find the document with this ID and remove it
-        await Review.findByIdAndDelete(reviewId);
+        await Review.deleteReviewById(reviewId);
         await updateMovieAverage(movieId);
 
         // 5. Redirect back to the movie page so the user sees the updated list
@@ -149,7 +133,7 @@ exports.updateReview = async (req, res) => {
         const { rating, description } = req.body;
 
         // 1. Find the review
-       const review = await Review.findById(reviewId);
+       const review = await Review.findReviewById(reviewId);
         if (!review) {
             return res.status(404).send("Review not found");
         }
@@ -163,10 +147,7 @@ exports.updateReview = async (req, res) => {
         }
 
         // 3. Update the review since authorization passed
-        await Review.findByIdAndUpdate(
-            reviewId, 
-            { rating, reviewContent: description }
-        );
+        await Review.updateReviewById(reviewId, { rating, reviewContent: description });
         await updateMovieAverage(movieId); // update the average rating as well
 
         res.redirect(`/movie-reviews/${movieId}`);
