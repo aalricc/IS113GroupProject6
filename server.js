@@ -13,6 +13,7 @@ const app = express();
 const path = require('path');
 const { getPopularMovies, clearPopularMoviesCache } = require("./data/movies");
 const { getRecommendedMovies } = require("./data/recommendations");
+const { MovieStats } = require("./models/moviestats-model");
 dotenv.config({ path: "./config.env" });
 app.set("view engine", "ejs");
 app.use(express.urlencoded({extended: true}));
@@ -39,9 +40,30 @@ app.use("/", adminRoutes);
 const searchRoutes = require("./routes/search-route");
 app.use("/", searchRoutes);
 
+async function attachUserRatingsToMovies(movies) {
+  const movieIds = movies.map(movie => String(movie.id));
+  const movieStats = await MovieStats.find({ movieId: { $in: movieIds } });
+  const ratingsByMovieId = {};
+
+  for (let stat of movieStats) {
+    ratingsByMovieId[String(stat.movieId)] = stat.averageRating;
+  }
+
+  for (let movie of movies) {
+    if (Object.prototype.hasOwnProperty.call(ratingsByMovieId, String(movie.id))) {
+      movie.userRating = ratingsByMovieId[String(movie.id)];
+    } else {
+      movie.userRating = null;
+    }
+  }
+
+  return movies;
+}
+
 async function renderHomePage(req, res) {
   try {
-    const movies = await getPopularMovies();
+    let movies = await getPopularMovies();
+    movies = await attachUserRatingsToMovies(movies);
     let recommendedMovies = [];
 
     if (req.session.isLoggedIn && req.session.currentUser) {
@@ -51,7 +73,7 @@ async function renderHomePage(req, res) {
     res.render("home", { movies, recommendedMovies });
   } catch (error) {
     console.error("Error loading home page:", error);
-    res.send("Failed to load home page");
+    res.status(500).send("Failed to load home page");
   }
 }
 
@@ -85,6 +107,6 @@ app.post("/clear-movie-cache", async (req, res) => {
     res.redirect("/");
   } catch (error) {
     console.log("Error clearing movie cache:", error);
-    res.send("Failed to clear movie cache");
+    res.status(500).send("Failed to clear movie cache");
   }
 });
