@@ -12,6 +12,7 @@ const searchRoute = require("./routes/search-route")
 const app = express();
 const path = require('path');
 const { getPopularMovies, clearPopularMoviesCache } = require("./data/movies");
+const { getRecommendedMovies } = require("./data/recommendations");
 dotenv.config({ path: "./config.env" });
 app.set("view engine", "ejs");
 app.use(express.urlencoded({extended: true}));
@@ -37,11 +38,25 @@ const adminRoutes = require("./routes/admin-routes");
 app.use("/", adminRoutes);
 const searchRoutes = require("./routes/search-route");
 app.use("/", searchRoutes);
+
+async function renderHomePage(req, res) {
+  try {
+    const movies = await getPopularMovies();
+    let recommendedMovies = [];
+
+    if (req.session.isLoggedIn && req.session.currentUser) {
+      recommendedMovies = await getRecommendedMovies(req.session.currentUser, movies);
+    }
+
+    res.render("home", { movies, recommendedMovies });
+  } catch (error) {
+    console.error("Error loading home page:", error);
+    res.send("Failed to load home page");
+  }
+}
+
 //Routes
-app.get("/", async (req, res) => {
-  const movies = await getPopularMovies();
-  res.render("home", { movies });
-});
+app.get("/", renderHomePage);
 
 async function connectDB() {
     try {
@@ -64,18 +79,12 @@ function startServer() {
 
 connectDB().then(startServer);
 
-
-app.get("/", async (req, res) => {
-  const movies = await getPopularMovies();
-  res.render("home", { movies });
-});
-
 app.post("/clear-movie-cache", async (req, res) => {
   try {
     await clearPopularMoviesCache();
     res.redirect("/");
   } catch (error) {
     console.log("Error clearing movie cache:", error);
-    res.status(500).send("Failed to clear movie cache");
+    res.send("Failed to clear movie cache");
   }
 });
