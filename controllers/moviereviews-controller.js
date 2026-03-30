@@ -2,6 +2,7 @@ const { getMovieById, getMovieTrailer } = require("../data/movies");
 const { Review } = require("../models/moviereviews-model");
 const MovieTrailer = require("../models/movie-trailer-model");
 const { MovieStats, UserView } = require('../models/moviestats-model');
+const Watchlist = require('./../models/watchlist-model');
 
 function formatTrailer(trailer) {
     if (!trailer || !trailer.youtubeKey) {
@@ -33,6 +34,9 @@ async function updateMovieAverage(movieId) {
         { averageRating: averageRating, totalReviews: totalReviews },
         { returnDocument: 'after', upsert: true }
     );
+    let updateWatchlistRating = await Watchlist.updateMovieRating(movieId, averageRating)
+
+
 }
 
 exports.moviereviews = async (req,res) => {

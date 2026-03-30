@@ -54,6 +54,10 @@ exports.markAsWatched = function(username, movieName) {
     return Watchlist.updateOne({username: username, movieName: movieName}, {hasWatched: true}) 
 }
 
+exports.updateMovieRating = function(movieID, averageRating) {
+    return Watchlist.updateMany({movieId: movieID}, {rating: averageRating}) 
+}
+
 exports.markAsUnwatched = function(username, movieName) {
     return Watchlist.updateOne({username: username, movieName: movieName}, {hasWatched: false}) 
 }
