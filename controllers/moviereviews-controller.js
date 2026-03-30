@@ -25,7 +25,7 @@ async function updateMovieAverage(movieId) {
     if (totalReviews > 0) {
         const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
         // .toFixed(1) turns it into a string, so we wrap it in Number() to save it properly to MongoDB
-        averageRating = Number((totalRating / totalReviews).toFixed(1)); 
+        averageRating = Number((totalRating / totalReviews).toFixed(1));
     }
 
     // Save the new math to the MovieStats document
