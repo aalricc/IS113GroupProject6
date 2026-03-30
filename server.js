@@ -12,7 +12,7 @@ const searchRoute = require("./routes/search-route")
 const app = express();
 const path = require('path');
 const { getPopularMovies, clearPopularMoviesCache } = require("./data/movies");
-
+dotenv.config({ path: "./config.env" });
 app.set("view engine", "ejs");
 app.use(express.urlencoded({extended: true}));
 app.use(session({
@@ -33,7 +33,10 @@ app.use("/", accountRoutes);
 app.use("/", moviereviewsRoutes);
 app.use('/watchlist', watchListRoutes);
 app.use('/', searchRoute);
-
+const adminRoutes = require("./routes/admin-routes");
+app.use("/", adminRoutes);
+const searchRoutes = require("./routes/search-route");
+app.use("/", searchRoutes);
 //Routes
 app.get("/", async (req, res) => {
   const movies = await getPopularMovies();

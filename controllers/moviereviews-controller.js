@@ -120,9 +120,9 @@ exports.deleteReview = async (req,res) => {
             return res.status(404).send("Review not found")
         }
 
-        // 3. checks in the backend for security
-const isOwner = String(review.userId) === String(req.session.currentUser.id);
-   const isAdmin = req.session.isAdmin === true;
+        // 3. // checks in the backend for security
+        const isOwner = String(review.userId) === String(req.session.currentUser.id);
+        const isAdmin = req.session.isAdmin === true;
 
         if (!isOwner && !isAdmin) {
             return res.status(403).send("Unauthorised")

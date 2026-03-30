@@ -39,7 +39,11 @@
         <% for (let movie of watchList) { %>
         <tr>
             <td><a href="/movie-reviews/<%=movie.movieId %>"><%=movie.movieName %></a></td>
+            <% if (movie.rating !== null) { %>
             <td>★ <%=movie.rating %></td>
+            <% } else { %>
+            <th>-</th>
+            <% } %>
             <td><%=movie.dateAdded.toISOString().split('T')[0]%></td>
             <!-- If movie has not been watched, don't display a tick symbol -->
             <% if (!movie.hasWatched) { %>
