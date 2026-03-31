@@ -30,7 +30,7 @@ async function updateMovieAverage(movieId) {
 
     // Save the new math to the MovieStats document
     await StatsModel.updateMovieRatingStats(movieId, averageRating, totalReviews);
-    let updateWatchlistRating = await Watchlist.updateMovieRating(movieId, averageRating)
+    await Watchlist.updateMovieRating(movieId, averageRating)
 
 
 }

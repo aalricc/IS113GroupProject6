@@ -58,7 +58,7 @@
                     <p>No trailer found.</p>
                 <% } %>
 
-                <% if (isLoggedIn && movieTrailer) { %>
+                <% if (isAdmin && movieTrailer) { %>
                     <% if (hasSavedTrailer) { %>
                         <form action="/update-trailer/<%= movieData.id %>" method="POST" style="display:inline;">
                             <input type="hidden" name="movieName" value="<%= movieData.title %>">
