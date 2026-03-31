@@ -28,7 +28,7 @@ const reviewSchema = new mongoose.Schema(
         }
     },
     {
-        timestamps: true
+        timestamps: true // Records the time the review was created / updated: inbuilt functions of createdAt. and updatedAt.
     }
 );
 
