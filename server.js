@@ -10,11 +10,13 @@ const watchListRoutes = require("./routes/watchlist-routes");
 const moviereviewsRoutes = require("./routes/moviereviews-routes");
 const adminRoutes = require('./routes/admin-routes');
 
+const searchRoute = require("./routes/search-route")
 const app = express();
 const path = require('path');
 const { getPopularMovies, clearPopularMoviesCache } = require("./data/movies");
-// const { connectDB } = require("./data/mongo");
-
+const { getRecommendedMovies } = require("./data/recommendations");
+const { MovieStats } = require("./models/moviestats-model");
+dotenv.config({ path: "./config.env" });
 app.set("view engine", "ejs");
 app.use(express.urlencoded({extended: true}));
 app.use(session({

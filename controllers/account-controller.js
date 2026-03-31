@@ -213,7 +213,6 @@ exports.changePassword = async (req, res) => {
 
         if (!match1) {
             errors.push("Current password is incorrect.");
-        const bcrypt = require("bcrypt")};
 
         const match = await bcrypt.compare(currentPassword, user.password);
         if (!match) {
