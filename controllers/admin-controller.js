@@ -145,10 +145,30 @@ exports.showAdminPage = async (req, res) => {
         const users = await User.retrieveAll();
         const topMovieActivity = await getTopMovieActivity();
 
-        res.render("admin", { reviews, users, topMovieActivity });
+        const created = req.query.created || null;
+        const updated = req.query.updated || null;
+
+        res.render("admin", { reviews, users, topMovieActivity, created, updated });
     } catch (error) {
         console.error("Error occured fetching admin data", error);
         res.status(500).send("Error loading admin page");
+    }
+};
+
+exports.createUser = async (req, res) => {
+    try {
+        const { username, email, password } = req.body;
+
+        await User.createUser({
+            username,
+            email,
+            password
+        });
+
+        res.redirect("/admin-page?created=true");
+    } catch (error) {
+        console.error("Error creating user", error);
+        res.status(500).send("Could not create user");
     }
 };
 
@@ -183,7 +203,7 @@ exports.updateUser = async (req, res) => {
             { username, email },
             { runValidators: true }
         );
-        res.redirect("/admin-page");
+        res.redirect("/admin-page?updated=true");
     } catch (error) {
         console.error("Error updating user", error);
         res.status(500).send("Could not update user");

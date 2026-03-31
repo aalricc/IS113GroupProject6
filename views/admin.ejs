@@ -105,6 +105,25 @@
         <% }) %>
     </table>
 <% } %>
+<% if (created) { %>
+    <script>
+        alert("User created successfully");
+    </script>
+<% } %>
+
+<% if (updated) { %>
+    <script>
+        alert("Username / email updated successfully");
+    </script>
+<% } %>
+
+<h2>Create New User</h2>
+<form action="/admin-create-user" method="POST">
+    <input type="text" name="username" placeholder="Enter username" required>
+    <input type="email" name="email" placeholder="Enter email" required>
+    <input type="text" name="password" placeholder="Enter password" required>
+    <button type="submit">Create User</button>
+</form>
 
 </body>
 </html>
