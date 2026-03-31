@@ -12,6 +12,34 @@
     <a href="/logout">Logout</a>
     <h1>Admin Page</h1>
 
+    <h2>Top 10 Movies</h2>
+    <% if (topMovieActivity.length === 0) { %>
+        <p>No movie activity found</p>
+    <% } else { %>
+        <table border="1">
+            <tr>
+                <th>Movie</th>
+                <th>Movie ID</th>
+                <th>Search Count</th>
+                <th>Watchlist Count</th>
+                <th>View Count</th>
+                <th>Total Count</th>
+                <th>Popularity Score</th>
+            </tr>
+            <% topMovieActivity.forEach(movie => { %>
+                <tr>
+                    <td><%= movie.movieTitle %></td>
+                    <td><%= movie.movieId %></td>
+                    <td><%= movie.searchCount %></td>
+                    <td><%= movie.watchlistCount %></td>
+                    <td><%= movie.viewCount %></td>
+                    <td><%= movie.totalCount %></td>
+                    <td><%= movie.popularityScore %></td>
+                </tr>
+            <% }) %>
+        </table>
+    <% } %>
+
     <% if (reviews.length === 0) { %>
         <p> No reviews found</p>
     <% } else { %>
@@ -80,4 +108,3 @@
 
 </body>
 </html>
-

@@ -1,15 +1,15 @@
-const fs = require('fs/promises');
 
-const Movie = require('./../models/watchlist-model');
+
+const Watchlist = require('./../models/watchlist-model');
 
 exports.showWatchlist = async (req, res) => {
 
     try {
         if (!req.session.currentUser || !req.session.currentUser.username) {
-            res.render("watchlist", { isLoggedIn: false, watchList: "", msg: "" })
+             return res.render("watchlist", { isLoggedIn: false, watchList: "", msg: "" })
         }
         else {
-            let watchList = await Movie.findWatchlistByID(req.session.currentUser.username); 
+            let watchList = await Watchlist.findWatchlistByID(req.session.currentUser.username); 
             res.render("watchlist", { isLoggedIn: true, watchList, msg: "" }); 
         }
     } catch (error) {
@@ -23,7 +23,7 @@ exports.removeMovie = async (req, res) => {
     const movie_name = req.body.movie
    
     try {
-        let success = await Movie.removeMovie(req.session.currentUser.username, movie_name) 
+        let success = await Watchlist.removeMovie(req.session.currentUser.username, movie_name) 
 
         if (success.deletedCount === 1) {
             console.log("Movie successfully removed from watchlist")
@@ -32,9 +32,8 @@ exports.removeMovie = async (req, res) => {
 
     catch (error) {
         console.error(error);
-        res.send("Failed to remove movie");
+        return res.send("Failed to remove movie");
     }
-
     res.redirect("/watchlist")
 }
 
@@ -43,7 +42,7 @@ exports.markWatched = async (req, res) => {
     const movie_name = req.body.movie
 
     try {
-        let updatedMovie = await Movie.markAsWatched(req.session.currentUser.username, movie_name) 
+        let updatedMovie = await Watchlist.markAsWatched(req.session.currentUser.username, movie_name) 
         console.log(updatedMovie)
     }
 
@@ -60,7 +59,7 @@ exports.markUnwatched = async (req, res) => {
     const movie_name = req.body.movie
 
     try {
-        let updatedMovie = await Movie.markAsUnwatched(req.session.currentUser.username, movie_name) 
+        let updatedMovie = await Watchlist.markAsUnwatched(req.session.currentUser.username, movie_name) 
         console.log(updatedMovie)
     }
 
@@ -80,7 +79,6 @@ exports.createWatchlist = async (req, res) => {
         }
 
         else {
-            let user_id = "u123";
             const name = req.body.movie;
             const rating = req.body.rating;
             const id = req.body.id
@@ -93,20 +91,20 @@ exports.createWatchlist = async (req, res) => {
                 movieId: id
             }
 
-            let movie = await Movie.findWatchlistbyIDandName(req.session.currentUser.username, name)
+            let movie = await Watchlist.findWatchlistbyIDandName(req.session.currentUser.username, name)
 
             if (movie) {
                 let msg = "Movie already exists in the watchlist"
-                let watchList = await Movie.findWatchlistByID(req.session.currentUser.username)
+                let watchList = await Watchlist.findWatchlistByID(req.session.currentUser.username)
                 res.render("watchlist", {  isLoggedIn: true, msg, watchList })
 
             }
 
             else {
-                let result = await Movie.createWatchlist(newMovie);
+                let result = await Watchlist.createWatchlist(newMovie);
                 console.log("Successfully added movie to watchlist")
                 let msg = "Movie added to watchlist."
-                let watchList = await Movie.findWatchlistByID(req.session.currentUser.username)
+                let watchList = await Watchlist.findWatchlistByID(req.session.currentUser.username)
 
                 res.render("watchlist", { isLoggedIn: true, msg, watchList })
 
@@ -117,7 +115,8 @@ exports.createWatchlist = async (req, res) => {
     }
 
     catch (error) {
-        console.log("Error adding movie to watchlist")
+        console.log("Error adding movie to watchlist", error);
+        res.send("Error adding movie to watchlist");
     }
 
 
