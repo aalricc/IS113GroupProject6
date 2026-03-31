@@ -117,6 +117,8 @@
         <% } else { %>
       
         <p><strong><%= review.username %></strong> rated it <strong><%= review.rating %>/10</strong></p>
+        <small>Posted on: <%= new Date(review.createdAt).toLocaleString() %></small>
+        </p>
         <p><%= review.reviewContent %></p>
         <% if (isLoggedIn && currentUser && (String(review.userId) === String(currentUser.id)|| isAdmin)) { %>
             <a href="/movie-reviews/<%= movieData.id %>?editId=<%= review._id %>" 
