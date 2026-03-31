@@ -11,6 +11,7 @@ router.post("/admin-delete-review/:reviewId",
   adminController.deleteReviewAsAdmin
 );
 
+
 router.post(
     "/admin-delete-user/:id",
     authMiddleware.checkIfLogged,
@@ -23,6 +24,13 @@ router.post(
     authMiddleware.checkIfLogged,
     authMiddleware.checkIfAdmin,
     adminController.updateUser
+);
+
+router.post(
+    "/admin-create-user",
+    authMiddleware.checkIfLogged,
+    authMiddleware.checkIfAdmin,
+    adminController.createUser
 );
 
 module.exports = router;

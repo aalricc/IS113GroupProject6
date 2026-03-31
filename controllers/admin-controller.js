@@ -6,8 +6,10 @@ exports.showAdminPage = async (req, res) => {
     try {
         const reviews = await Review.find();
         const users = await User.retrieveAll();
+        const created = req.query.created || null;
+        const updated = req.query.updated || null;
 
-        res.render("admin", { reviews, users });
+        res.render("admin", { reviews, users, created, updated });
     } catch (error) {
         console.error("Error occured fetching admin data", error);
         res.status(500).send("Error loading admin page");
@@ -48,9 +50,26 @@ exports.updateUser = async (req, res) => {
             { runValidators: true }
         );
         res.send('Update successful!')
-        res.redirect("/admin-page");
+        res.redirect("/admin-page?updated=true");
     } catch (error) {
         console.error("Error updating user", error);
         res.status(500).send("Could not update user");
+    }
+};
+
+exports.createUser = async (req, res) => {
+    try {
+        const { username, email, password } = req.body;
+
+        await User.createUser({
+            username,
+            email,
+            password
+        });
+
+        res.redirect("/admin-page?created=true");
+    } catch (error) {
+        console.error("Error creating user", error);
+        res.status(500).send("Could not create user");
     }
 };
