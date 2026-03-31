@@ -38,8 +38,6 @@ app.use("/", moviereviewsRoutes);
 app.use('/', adminRoutes);
 app.use('/watchlist', watchListRoutes);
 app.use('/', searchRoute);
-const adminRoutes = require("./routes/admin-routes");
-app.use("/", adminRoutes);
 const searchRoutes = require("./routes/search-route");
 app.use("/", searchRoutes);
 
