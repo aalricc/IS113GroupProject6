@@ -1,4 +1,5 @@
 const User = require(".././models/user");
+const bcrypt = require('bcrypt');
 
 // read portion
 exports.showAccountPage = async (req, res)=>{
@@ -208,6 +209,10 @@ exports.changePassword = async (req, res) => {
             errors.push("All fields are required.");
         }
 
+        const match1 = await bcrypt.compare(currentPassword, user.password);
+
+        if (!match1) {
+            errors.push("Current password is incorrect.");
         const bcrypt = require("bcrypt");
 
         const match = await bcrypt.compare(currentPassword, user.password);
@@ -223,7 +228,10 @@ exports.changePassword = async (req, res) => {
             errors.push("New passwords do not match.");
         }
 
-        if (newPassword === user.password) {
+        const match2 = await bcrypt.compare(newPassword, user.password);
+
+
+        if (match2) {
             errors.push("Please choose a different password.");
         }
 

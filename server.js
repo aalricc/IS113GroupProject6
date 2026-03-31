@@ -8,6 +8,13 @@ const registerRoutes = require("./routes/register-routes");
 const accountRoutes = require("./routes/account-routes");
 const watchListRoutes = require("./routes/watchlist-routes");
 const moviereviewsRoutes = require("./routes/moviereviews-routes");
+const adminRoutes = require('./routes/admin-routes');
+
+const app = express();
+const path = require('path');
+const { getPopularMovies, clearPopularMoviesCache } = require("./data/movies");
+// const { connectDB } = require("./data/mongo");
+
 const searchRoute = require("./routes/search-route")
 const app = express();
 const path = require('path');
@@ -33,6 +40,7 @@ app.use("/", loginRoutes);
 app.use("/", registerRoutes);
 app.use("/", accountRoutes);
 app.use("/", moviereviewsRoutes);
+app.use('/', adminRoutes);
 app.use('/watchlist', watchListRoutes);
 app.use('/', searchRoute);
 const adminRoutes = require("./routes/admin-routes");
