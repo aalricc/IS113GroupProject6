@@ -23,7 +23,6 @@
   <% } %>
 
   <h1>Home</h1>
-  <h2>Popular Movies</h2>
   <div class="search-container">
     <form action="/search" method="GET">
       <input type="text" name="query" placeholder="Search for a movie...">
@@ -35,6 +34,43 @@
     <button type="submit">Clear Movie Cache</button>
   </form>
 
+  <% if (isLoggedIn) { %>
+    <h2>Movies You May Like</h2>
+    <% if (recommendedMovies.length > 0) { %>
+      <div class="grid">
+        <% for (let movie of recommendedMovies) { %>
+          <a href="/movie-reviews/<%= movie.id %>" style="text-decoration: none; color: inherit;">
+            <div class="card">
+              <% if (movie.poster) { %>
+                <img src="<%= movie.poster %>" alt="<%= movie.title %>" loading="lazy" />
+              <% } else { %>
+                <div style="width: 100%; min-height: 300px; display: flex; align-items: center; justify-content: center; background: #ddd;">
+                  No Poster
+                </div>
+              <% } %>
+              <div class="card-info">
+                <div class="card-title"><%= movie.title %></div>
+                <div class="card-meta">
+                  <span class="star">&#9733;</span> TMDB:
+                  <%= typeof movie.rating === "number" ? movie.rating.toFixed(1) : "N/A" %>
+                  &nbsp;&middot;&nbsp;
+                  <span class="star">&#9733;</span> User:
+                  <%= typeof movie.userRating === "number" ? movie.userRating.toFixed(1) : "N/A" %>
+                  &nbsp;&middot;&nbsp;
+                  <%= movie.releaseDate ? movie.releaseDate.slice(0, 4) : "N/A" %>
+                </div>
+                <p><strong>Recommendation score:</strong> <%= movie.recommendationScore %></p>
+              </div>
+            </div>
+          </a>
+        <% } %>
+      </div>
+    <% } else { %>
+      <p>Watch, save, or search for more movies to get recommendations.</p>
+    <% } %>
+  <% } %>
+
+  <h2>Popular Movies</h2>
   <div class="grid">
     <% for (let movie of movies) { %>
       <a href="/movie-reviews/<%= movie.id %>" style="text-decoration: none; color: inherit;">
@@ -49,8 +85,11 @@
           <div class="card-info">
             <div class="card-title"><%= movie.title %></div>
             <div class="card-meta">
-              <span class="star">&#9733;</span>
+              <span class="star">&#9733;</span> TMDB:
               <%= typeof movie.rating === "number" ? movie.rating.toFixed(1) : "N/A" %>
+              &nbsp;&middot;&nbsp;
+              <span class="star">&#9733;</span> User:
+              <%= typeof movie.userRating === "number" ? movie.userRating.toFixed(1) : "N/A" %>
               &nbsp;&middot;&nbsp;
               <%= movie.releaseDate ? movie.releaseDate.slice(0, 4) : "N/A" %>
             </div>

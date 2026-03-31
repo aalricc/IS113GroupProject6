@@ -35,12 +35,51 @@ app.use("/", accountRoutes);
 app.use("/", moviereviewsRoutes);
 app.use('/', adminRoutes);
 app.use('/watchlist', watchListRoutes);
+app.use('/', searchRoute);
+const adminRoutes = require("./routes/admin-routes");
+app.use("/", adminRoutes);
+const searchRoutes = require("./routes/search-route");
+app.use("/", searchRoutes);
+
+async function attachUserRatingsToMovies(movies) {
+  const movieIds = movies.map(movie => String(movie.id));
+  const movieStats = await MovieStats.find({ movieId: { $in: movieIds } });
+  const ratingsByMovieId = {};
+
+  for (let stat of movieStats) {
+    ratingsByMovieId[String(stat.movieId)] = stat.averageRating;
+  }
+
+  for (let movie of movies) {
+    if (Object.prototype.hasOwnProperty.call(ratingsByMovieId, String(movie.id))) {
+      movie.userRating = ratingsByMovieId[String(movie.id)];
+    } else {
+      movie.userRating = null;
+    }
+  }
+
+  return movies;
+}
+
+async function renderHomePage(req, res) {
+  try {
+    let movies = await getPopularMovies();
+    movies = await attachUserRatingsToMovies(movies);
+    let recommendedMovies = [];
+
+    if (req.session.isLoggedIn && req.session.currentUser) {
+      recommendedMovies = await getRecommendedMovies(req.session.currentUser, movies);
+    }
+
+    res.render("home", { movies, recommendedMovies });
+  } catch (error) {
+    console.error("Error loading home page:", error);
+    res.status(500).send("Failed to load home page");
+  }
+}
 
 //Routes
-app.get("/", async (req, res) => {
-  const movies = await getPopularMovies();
-  res.render("home", { movies });
-});
+app.get("/", renderHomePage);
 
 async function connectDB() {
     try {
@@ -52,7 +91,7 @@ async function connectDB() {
     }
 };
 
-  
+
 function startServer() {
   const hostname = "localhost";
   const port = 8000;
@@ -62,12 +101,6 @@ function startServer() {
 }
 
 connectDB().then(startServer);
-
-
-app.get("/", async (req, res) => {
-  const movies = await getPopularMovies();
-  res.render("home", { movies });
-});
 
 app.post("/clear-movie-cache", async (req, res) => {
   try {

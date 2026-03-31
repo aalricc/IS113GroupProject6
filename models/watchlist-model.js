@@ -11,7 +11,6 @@ const watchlistSchema = new mongoose.Schema({
     },
     rating: {
         type: Number,
-        required: true
     },
     dateAdded: {
         type: Date,
@@ -53,6 +52,10 @@ exports.removeMovie = function(username, movieName) {
 
 exports.markAsWatched = function(username, movieName) {
     return Watchlist.updateOne({username: username, movieName: movieName}, {hasWatched: true}) 
+}
+
+exports.updateMovieRating = function(movieID, averageRating) {
+    return Watchlist.updateMany({movieId: movieID}, {rating: averageRating}) 
 }
 
 exports.markAsUnwatched = function(username, movieName) {

@@ -99,4 +99,39 @@ async function searchMovies(query) {
   return (data.results || []).map(movie => normaliseMovie(movie));
 }
 
-module.exports = {getPopularMovies, clearPopularMoviesCache, getMovieById, searchMovies };
+async function getMovieTrailer(movieName, movieId) {
+  try {
+    let trailerMovieId = movieId;
+
+    if (!trailerMovieId && movieName) {
+      const matches = await searchMovies(movieName);
+      if (matches.length > 0) {
+        trailerMovieId = matches[0].id;
+      }
+    }
+
+    if (!trailerMovieId) {
+      return null;
+    }
+
+    const data = await fetchJson(`${BASE_URL}/movie/${trailerMovieId}/videos?api_key=${TMDB_API_KEY}&language=en-US`);
+    const videos = data.results || [];
+    const trailer = videos.find(video => video.site === "YouTube" && video.type === "Trailer" && video.official)
+      || videos.find(video => video.site === "YouTube" && video.type === "Trailer")
+      || videos.find(video => video.site === "YouTube");
+
+    if (!trailer) {
+      return null;
+    }
+
+    return {
+      trailerName: trailer.name,
+      youtubeKey: trailer.key
+    };
+  } catch (error) {
+    console.error("Error fetching movie trailer:", error.message);
+    return null;
+  }
+}
+
+module.exports = {getPopularMovies, clearPopularMoviesCache, getMovieById, searchMovies, getMovieTrailer };

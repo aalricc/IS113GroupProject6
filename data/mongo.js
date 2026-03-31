@@ -1,12 +1,9 @@
 const mongoose = require("mongoose");
-const dotenv = require("dotenv");
 const { Review } = require("../models/moviereviews-model");
 const { MovieCache } = require("../models/movie-cache-model");
 const dns = require('dns');
 dns.setServers(['8.8.8.8']);
-dotenv.config({path: "./config.env"});
 
-let connectionPromise;
 
 async function connectDB() {
     try {
@@ -17,19 +14,7 @@ async function connectDB() {
         process.exit(1);
     }
 
-    if (!connectionPromise) {
-        connectionPromise = mongoose.connect(process.env.DB).then(() => {
-            console.log("MongoDB connected successfully");
-            return mongoose.connection;
-        }).catch((error) => {
-            connectionPromise = null;
-            throw error;
-        });
-    }
-
-    return connectionPromise;
 }
-
 async function pushToDB(Model, data) {
     await connectDB();
     const document = new Model(data);

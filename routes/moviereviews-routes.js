@@ -11,6 +11,12 @@ router.get('/movie-reviews/:id', moviereviewsController.moviereviews);
 
 router.post("/movie-reviews/:id", checkIfLogged,moviereviewsController.postReview);
 
+router.post("/movie-trailer/:movieId", checkIfLogged, moviereviewsController.createTrailer)
+
+router.post("/update-trailer/:movieId", checkIfLogged, moviereviewsController.updateTrailer)
+
+router.post("/delete-trailer/:movieId", checkIfLogged, moviereviewsController.deleteTrailer)
+
 router.post("/delete-review/:reviewId/:movieId", checkIfLogged,moviereviewsController.deleteReview)
 
 router.post("/update-review/:reviewId/:movieId", checkIfLogged,moviereviewsController.updateReview)
