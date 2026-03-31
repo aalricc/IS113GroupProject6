@@ -213,7 +213,7 @@ exports.changePassword = async (req, res) => {
 
         if (!match1) {
             errors.push("Current password is incorrect.");
-        const bcrypt = require("bcrypt");
+        const bcrypt = require("bcrypt")};
 
         const match = await bcrypt.compare(currentPassword, user.password);
         if (!match) {
@@ -255,7 +255,7 @@ exports.changePassword = async (req, res) => {
         console.log("Change Password error: ", error);
         return res.status(500).send("Server Error");
     }
-};
+    };
 
 exports.showDeleteAccountPage = async (req, res) => {
     try {
@@ -300,4 +300,3 @@ exports.deleteAccount = async (req, res) => {
         return res.status(500).send("Server error");
     }
 };
-
