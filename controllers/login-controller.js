@@ -33,7 +33,7 @@ exports.loginAttempt = async (req, res) => {
         // check whether account is locked
         if (user.lockUntil && user.lockUntil.getTime() > Date.now()) {
             return res.render("login", {
-                falseLogin: true,
+                falseLogin: null,
                 isLoggedIn: req.session.isLoggedIn || false,
                 triesLeft: 0,
                 isLocked: true
@@ -63,7 +63,7 @@ exports.loginAttempt = async (req, res) => {
             const isLocked = !!(user.lockUntil && Date.now() < user.lockUntil.getTime())
 
             return res.render("login", {
-                falseLogin: true,
+                falseLogin: null,
                 isLoggedIn: req.session.isLoggedIn || false,
                 triesLeft,
                 isLocked

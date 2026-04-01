@@ -214,11 +214,6 @@ exports.changePassword = async (req, res) => {
         if (!match1) {
             errors.push("Current password is incorrect.");}
 
-        const match = await bcrypt.compare(currentPassword, user.password);
-        if (!match) {
-        errors.push("Current password is incorrect.");
-        }
-
         if (newPassword.length < 6) {
             errors.push("New password must be at least 6 characters.");
         }
