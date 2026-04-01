@@ -54,3 +54,5 @@ exports.deleteReviewById = function(reviewId) {
 exports.updateReviewById = function(reviewId, updateData) {
     return Review.findByIdAndUpdate(reviewId, updateData);
 };
+
+exports.Review = Review;

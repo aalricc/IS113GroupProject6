@@ -185,7 +185,22 @@ exports.deleteReviewAsAdmin = async (req, res) => {
 exports.deleteUser = async (req, res) => {
     try {
         const id = req.params.id;
-        await User.findByIdAndDelete(id);
+
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+
+        const Review = mongoose.model("Review");
+        const Watchlist = mongoose.model("Watchlist");
+                
+        await Promise.all([
+            Review.deleteMany({ userId: id }),
+            SearchHistory.clearHist(id),
+            Watchlist.deleteMany({ username: user.username }),
+            User.findByIdAndDelete(id),
+        ]);
+
         res.redirect("/admin-page");
     } catch (error) {
         console.error("Error deleting user", error);
