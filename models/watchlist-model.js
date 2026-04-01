@@ -65,3 +65,5 @@ exports.markAsUnwatched = function(username, movieName) {
 exports.createWatchlist = function(newMovie) {
     return Watchlist.create(newMovie)
 }
+
+exports.Watchlist = Watchlist;

@@ -1,5 +1,8 @@
 const User = require(".././models/user");
 const bcrypt = require('bcrypt');
+const { SearchHistory } = require("../models/searchHistory-model");
+const { Review } = require("../models/moviereviews-model");
+const { Watchlist } = require("../models/watchlist-model");
 
 // read portion
 exports.showAccountPage = async (req, res)=>{
@@ -270,23 +273,31 @@ exports.showDeleteAccountPage = async (req, res) => {
 
 exports.deleteAccount = async (req, res) => {
     try {
-        const user = await User.findById(req.session.currentUser.id);
+        const userId = req.session.currentUser.id;
+        const username = req.session.currentUser.username; // needed for watchlist lookup
+
+        const user = await User.findById(userId);
 
         if (!user) {
             return res.redirect("/login");
         }
 
-        // delete user in database
-        await User.findByIdAndDelete(req.session.currentUser.id);
+        // Delete all related data in parallel
+        await Promise.all([
+            Review.deleteMany({ userId: userId }),
+            SearchHistory.deleteMany({ userId: userId }),
+            Watchlist.deleteMany({ username: username }),
+            User.findByIdAndDelete(userId),
+        ]);
 
-        // delete session
+        // Destroy session
         req.session.destroy((err) => {
             if (err) {
                 console.log("Session destroy error:", err);
                 return res.status(500).send("Could not log out after deletion");
             }
 
-                res.clearCookie("connect.sid");
+            res.clearCookie("connect.sid");
             return res.redirect("/");
         });
     } catch (error) {

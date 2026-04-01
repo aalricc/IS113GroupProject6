@@ -9,8 +9,8 @@ const accountRoutes = require("./routes/account-routes");
 const watchListRoutes = require("./routes/watchlist-routes");
 const moviereviewsRoutes = require("./routes/moviereviews-routes");
 const adminRoutes = require('./routes/admin-routes');
+const searchRoute = require("./routes/search-route");
 
-const searchRoute = require("./routes/search-route")
 const app = express();
 const path = require('path');
 const { getPopularMovies, clearPopularMoviesCache } = require("./data/movies");
@@ -39,8 +39,6 @@ app.use("/", moviereviewsRoutes);
 app.use('/', adminRoutes);
 app.use('/watchlist', watchListRoutes);
 app.use('/', searchRoute);
-const searchRoutes = require("./routes/search-route");
-app.use("/", searchRoutes);
 
 async function attachUserRatingsToMovies(movies) {
   const movieIds = movies.map(movie => String(movie.id));
