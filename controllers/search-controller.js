@@ -1,10 +1,12 @@
 // search-controller.js
 const { searchMovies: fetchMovies } = require("../data/movies");
 const { SearchHistory } = require("../models/searchHistory-model"); 
+const { MovieStats } = require("../models/moviestats-model");
 
 exports.searchMovies = async (req, res) => { 
   const query = req.query.query || "";
   const clean = query.trim().toLowerCase();
+  
 
   const isLoggedIn = !!req.session.isLoggedIn;
   const userId = req.session.currentUser?.id;
@@ -20,7 +22,11 @@ exports.searchMovies = async (req, res) => {
   }
 
   try {
-    const results = await fetchMovies(clean); 
+    let results = await fetchMovies(clean); 
+    for (obj of results){
+      let stats =  await MovieStats.findOne({movieId : obj.id});
+      obj.rating = stats ? stats.averageRating : null
+    }
     let history = [];
     
     // check if logged in

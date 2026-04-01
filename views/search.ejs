@@ -57,7 +57,7 @@
             <td><a href="/movie-reviews/<%= results[i].id %>" style="text-decoration: none; color: inherit;"><img src="<%= results[i]['poster'] %>" width="80" alt="<%= results[i]['title']%>"/></a></td>
             <td><%= results[i]['title'] %></td>
 
-            <td><% if (results[i]['rating']==""){ %>
+            <td><% if (results[i]['rating']== null){ %>
                 No Ratings Yet
               <% } else {%>
                 <%= results[i]['rating'] %>
