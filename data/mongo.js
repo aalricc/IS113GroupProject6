@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 const { Review } = require("../models/moviereviews-model");
 const { MovieCache } = require("../models/movie-cache-model");
-const dns = require('dns');
-dns.setServers(['8.8.8.8']);
+
 
 
 async function connectDB() {
