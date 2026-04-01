@@ -26,11 +26,12 @@
 
     <% if (falseLogin) { %>
         <h2>Invalid username or password. Register if you have not!</h2>
-        <% if (isLocked){ %>
-            <p>You have reached the maximum tries, try again in 1min</p>
-        <% } else if (triesLeft !== null) { %>
-            <p>Remaining tries before timeout: <%= triesLeft %></p>
-        <% } %>
+    <% } %>
+
+    <% if (isLocked){ %>
+    <p>You have reached the maximum tries, try again in 1min</p>
+    <% } else if (triesLeft !== null) { %>
+        <p>Remaining tries before timeout: <%= triesLeft %></p>
     <% } %>
 
     <form action="/login-attempt" method="POST">
