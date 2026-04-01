@@ -4,126 +4,122 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin page</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <a class="active" href="/">Home</a>
-    <a href="/watchlist">Watchlist</a>
-    <a href="/account">Account</a>
-    <a href="/logout">Logout</a>
+<div class="topnav">
+        <a class = "active" href="/">Home</a>
+        <a href="/watchlist">Watchlist</a>
+        <a href="/account">Account</a>
+        <a href="/logout">Logout</a>
+    </div>
+    
     <h1>Admin Page</h1>
 
-    <h2>Top 10 Movies</h2>
-    <% if (topMovieActivity.length === 0) { %>
-        <p>No movie activity found</p>
-    <% } else { %>
-        <table border="1">
-            <tr>
-                <th>Movie</th>
-                <th>Movie ID</th>
-                <th>Search Count</th>
-                <th>Watchlist Count</th>
-                <th>View Count</th>
-                <th>Total Count</th>
-                <th>Popularity Score</th>
-            </tr>
-            <% topMovieActivity.forEach(movie => { %>
-                <tr>
-                    <td><%= movie.movieTitle %></td>
-                    <td><%= movie.movieId %></td>
-                    <td><%= movie.searchCount %></td>
-                    <td><%= movie.watchlistCount %></td>
-                    <td><%= movie.viewCount %></td>
-                    <td><%= movie.totalCount %></td>
-                    <td><%= movie.popularityScore %></td>
-                </tr>
-            <% }) %>
-        </table>
-    <% } %>
+    <div class="admin-dashboard">
+        <div class="admin-section">
+            <h2>Top 10 Movies</h2>
+            <% if (topMovieActivity.length === 0) { %>
+                <p>No movie activity found</p>
+            <% } else { %>
+                <table border="1">
+                    <tr>
+                        <th>Movie</th>
+                        <th>ID</th>
+                        <th>Searches</th>
+                        <th>Watchlists</th>
+                        <th>Views</th>
+                        <th>Total</th>
+                        <th>Score</th>
+                    </tr>
+                    <% topMovieActivity.forEach(movie => { %>
+                        <tr>
+                            <td><%= movie.movieTitle %></td>
+                            <td><%= movie.movieId %></td>
+                            <td><%= movie.searchCount %></td>
+                            <td><%= movie.watchlistCount %></td>
+                            <td><%= movie.viewCount %></td>
+                            <td><%= movie.totalCount %></td>
+                            <td><%= movie.popularityScore %></td>
+                        </tr>
+                    <% }) %>
+                </table>
+            <% } %>
+        </div>
 
-    <% if (reviews.length === 0) { %>
-        <p> No reviews found</p>
-    <% } else { %>
-    
-    <h2>All movie reviews </h2>
-    <p>Total reviews: <%= reviews.length%> </p>
-    <table border="1">
-        <tr> 
-        <th>Movie</th>
-        <th>User</th>
-        <th>Rating</th>
-        <th>Review</th>
-        <th>Actions</th>
-        </tr>
-        <% reviews.forEach(review => { %>
-            <tr>
-                <td> <%=review.movieId %> </td>
-                <td> <%=review.username %></td>
-                <td> <%= review.rating %></td>
-                <td> <%= review.reviewContent%></td>
-                <td>
-                    <form action="/admin-delete-review/<%= review._id %>" method="POST">
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
-                </tr>
-        <% }) %>
-    </table>
-    <% } %>
+        <div class="admin-section">
+            <h2>All Movie Reviews</h2>
+            <p>Total reviews: <%= reviews.length %></p>
+            <% if (reviews.length === 0) { %>
+                <p>No reviews found</p>
+            <% } else { %>
+                <table border="1">
+                    <tr> 
+                        <th>Movie</th>
+                        <th>User</th>
+                        <th>Rating</th>
+                        <th>Review</th>
+                        <th>Actions</th>
+                    </tr>
+                    <% reviews.forEach(review => { %>
+                        <tr>
+                            <td><%= review.movieId %></td>
+                            <td><%= review.username %></td>
+                            <td><%= review.rating %></td>
+                            <td><%= review.reviewContent %></td>
+                            <td>
+                                <form action="/admin-delete-review/<%= review._id %>" method="POST" class="inline-action-form">
+                                    <button type="submit" class="danger-btn">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </table>
+            <% } %>
+        </div>
 
-<h2>All Users</h2>
-<p>Total users: <%= users.length %></p>
+        <div class="admin-section">
+            <h2>All Users</h2>
+            <p>Total users: <%= users.length %></p>
+            <% if (users.length === 0) { %>
+                <p>No users found</p>
+            <% } else { %>
+                <table border="1">
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th colspan="2">Actions</th>
+                    </tr>
+                    <% users.forEach(user => { %>
+                        <tr>
+                            <form action="/admin-update-user/<%= user._id %>" method="POST" class="inline-action-form">
+                                <td><input type="text" name="username" value="<%= user.username %>" style="width: 100px;"></td>
+                                <td><input type="email" name="email" value="<%= user.email %>" style="width: 150px;"></td>
+                                <td><button type="submit">Edit</button></td>
+                            </form>
+                            <td>
+                                <form action="/admin-delete-user/<%= user._id %>" method="POST" class="inline-action-form">
+                                    <button type="submit" class="danger-btn">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </table>
+            <% } %>
+        </div>
 
-<% if (users.length === 0) { %>
-    <p>No users found</p>
-<% } else { %>
-    <table border="1">
-        <tr>
-            <th>Username</th>
-            <th>Email</th>
-            <th colspan="2">Actions</th>
-        </tr>
+        <div class="admin-section">
+            <h2>Create New User</h2>
+            <form action="/admin-create-user" method="POST">
+                <input type="text" name="username" placeholder="Enter username" required>
+                <input type="email" name="email" placeholder="Enter email" required>
+                <input type="text" name="password" placeholder="Enter password" required>
+                <button type="submit">Create User</button>
+            </form>
+        </div>
+    </div>
 
-        <% users.forEach(user => { %>
-            <tr>
-                <form action="/admin-update-user/<%= user._id %>" method="POST">
-                    <td>
-                        <input type="text" name="username" value="<%= user.username %>">
-                    </td>
-                    <td>
-                        <input type="email" name="email" value="<%= user.email %>">
-                    </td>
-                    <td>
-                        <button type="submit">Edit</button>
-                    </td>
-                </form>
-                <td>
-                    <form action="/admin-delete-user/<%= user._id %>" method="POST">
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
-            </tr>
-        <% }) %>
-    </table>
-<% } %>
-<% if (created) { %>
-    <script>
-        alert("User created successfully");
-    </script>
-<% } %>
-
-<% if (updated) { %>
-    <script>
-        alert("Username / email updated successfully");
-    </script>
-<% } %>
-
-<h2>Create New User</h2>
-<form action="/admin-create-user" method="POST">
-    <input type="text" name="username" placeholder="Enter username" required>
-    <input type="email" name="email" placeholder="Enter email" required>
-    <input type="text" name="password" placeholder="Enter password" required>
-    <button type="submit">Create User</button>
-</form>
-
+    <% if (created) { %> <script>alert("User created successfully");</script> <% } %>
+    <% if (updated) { %> <script>alert("Username / email updated successfully");</script> <% } %>
 </body>
 </html>
