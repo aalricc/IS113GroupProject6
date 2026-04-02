@@ -83,7 +83,7 @@
 </div>
 
 
-   <% if (isLoggedIn) { %>
+   <% if (isLoggedIn && !editId) { %>
     <form action="/movie-reviews/<%= movieData.id %>" method="POST">
         <h3>Submit a Review</h3>
         <label for="rating">Your rating (1-10):</label><br>
@@ -94,7 +94,7 @@
         <br><br>
         <button type="submit">Send Review</button>
     </form>
-<% } else { %>
+<% } else if (!isLoggedIn){ %>
     <div style="background: #eee; padding: 20px; border-radius: 8px; margin-top: 30px; text-align: center;"> <!--If the user is not logged in, he will be prompted to log in. But he can still read the reviews-->
         <p>Want to share your thoughts? <a href="/login">Login</a> to post a review!</p>
     </div>
@@ -139,6 +139,7 @@
     </form>
 <% }} %>
       </div>
+        </div>
     <%}) %>
   <% } else { %>
     <p>No reviews yet. Be the first to post one!</p>
