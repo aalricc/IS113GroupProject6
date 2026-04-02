@@ -72,8 +72,9 @@ exports.searchMovies = async (req, res) => {
 
 // clear history
 exports.clearHistory = async (req, res) => {
+  const isLoggedIn = !!req.session.isLoggedIn;
   const userId = req.session.currentUser?.id;
-  if (userId) {
+  if (userId && isLoggedIn) {
     await SearchHistory.clearHist(userId);
   }
   res.redirect("/search");
