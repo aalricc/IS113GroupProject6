@@ -94,7 +94,7 @@
           <table border="0">
             <% for (let movie of obj["results"]) { %>
               <tr>
-                <td><%= movie["title"] %></td>
+                <td><a href="/movie-reviews/<%= movie.id %>"><%= movie["title"] %></a></td>
               </tr>
             <% } %>
           </table>
