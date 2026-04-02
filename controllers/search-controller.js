@@ -33,7 +33,7 @@ exports.searchMovies = async (req, res) => {
     results = filteredResults;
     for (obj of results){
       let stats =  await MovieStats.findOne({movieId : obj.id});
-      obj.rating = stats ? stats.averageRating : null
+      obj.communityRating = stats ? stats.averageRating : null
     }
     let history = [];
     
