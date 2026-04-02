@@ -27,6 +27,10 @@ const searchEntrySchema = new mongoose.Schema({
   }
 });
 
+searchEntrySchema.index(
+  { userId: 1, query: 1 },
+  { unique: true }
+);
 const SearchHistory = mongoose.model('SearchHistory', searchEntrySchema);
 
 SearchHistory.findByIDandSort = function(userId) {

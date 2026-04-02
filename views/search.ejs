@@ -45,7 +45,8 @@
           <th>#</th>
           <th>Poster (Click on the posters to find out more!)</th>
           <th>Title</th>
-          <th>Rating</th>
+          <th>TMDB Rating</th>
+          <th>Community Rating</th>
           <th>Release Date</th>
           </tr>
           </div>
@@ -56,11 +57,15 @@
             <td><%= i + 1 %></td>
             <td><a href="/movie-reviews/<%= results[i].id %>" style="text-decoration: none; color: inherit;"><img src="<%= results[i]['poster'] %>" width="80" alt="<%= results[i]['title']%>"/></a></td>
             <td><%= results[i]['title'] %></td>
-
             <td><% if (results[i]['rating']== null){ %>
                 No Ratings Yet
               <% } else {%>
                 <%= results[i]['rating'] %>
+              <% } %> </td>
+            <td><% if (results[i]['communityRating']== null){ %>
+                No Ratings Yet
+              <% } else {%>
+                <%= results[i]['communityRating'] %>
               <% } %> </td>
             <td><% if (results[i]['releaseDate']==""){ %>
                 No Information
@@ -94,7 +99,7 @@
           <table border="0">
             <% for (let movie of obj["results"]) { %>
               <tr>
-                <td><%= movie["title"] %></td>
+                <td><a href="/movie-reviews/<%= movie.id %>"><%= movie["title"] %></a></td>
               </tr>
             <% } %>
           </table>
