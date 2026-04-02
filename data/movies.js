@@ -57,12 +57,19 @@ async function fetchAndCache() {
     await updateInDB(
       MovieCache,
       { cacheKey: POPULAR_MOVIES_CACHE_KEY },
-      { movies: movies, updatedAt: new Date() }
+      {
+        movies: movies,
+        source: "tmdb",
+        movieCount: movies.length,
+        updatedAt: new Date()
+      }
     );
   } else {
     await pushToDB(MovieCache, {
       cacheKey: POPULAR_MOVIES_CACHE_KEY,
       movies: movies,
+      source: "tmdb",
+      movieCount: movies.length,
       updatedAt: new Date()
     });
   }

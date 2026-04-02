@@ -7,6 +7,10 @@ const movieStatsSchema = new mongoose.Schema({
         required: true, 
         unique: true 
     },
+    movieTitle: {
+        type: String,
+        default: ""
+    },
     // The actual view counter
     viewCount: { 
         type: Number, 
@@ -19,6 +23,10 @@ const movieStatsSchema = new mongoose.Schema({
     totalReviews: {
         type: Number,
         default: 0
+    },
+    lastUpdated: {
+        type: Date,
+        default: Date.now
     }
 });
 
@@ -58,17 +66,30 @@ const UserView = mongoose.model('UserView', userViewSchema);
 exports.updateMovieRatingStats = function(movieId, averageRating, totalReviews) {
     return MovieStats.findOneAndUpdate(
         { movieId: movieId },
-        { averageRating: averageRating, totalReviews: totalReviews },
-        { returnDocument: 'after', upsert: true }
+        {
+            averageRating: averageRating,
+            totalReviews: totalReviews,
+            lastUpdated: new Date()
+        },
+        { returnDocument: 'after', upsert: true, setDefaultsOnInsert: true }
     );
 };
 
 // 2. Increments the global view count for a movie
-exports.incrementGlobalViews = function(movieId) {
+exports.incrementGlobalViews = function(movieId, movieTitle = "") {
+    const update = {
+        $inc: { viewCount: 1 },
+        $set: { lastUpdated: new Date() }
+    };
+
+    if (movieTitle) {
+        update.$set.movieTitle = movieTitle;
+    }
+
     return MovieStats.findOneAndUpdate(
         { movieId: movieId },
-        { $inc: { viewCount: 1 } },
-        { returnDocument: 'after', upsert: true }
+        update,
+        { returnDocument: 'after', upsert: true, setDefaultsOnInsert: true }
     );
 };
 
@@ -77,7 +98,7 @@ exports.incrementUserViews = function(userId, movieId) {
     return UserView.findOneAndUpdate(
         { userId: userId, movieId: movieId },
         { $inc: { viewCount: 1 } },
-        { returnDocument: 'after', upsert: true }
+        { returnDocument: 'after', upsert: true, setDefaultsOnInsert: true }
     );
 };
 

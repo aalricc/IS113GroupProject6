@@ -17,6 +17,21 @@ function formatTrailer(trailer) {
     };
 }
 
+function validateReviewInput(rating, description) {
+    const numericRating = Number(rating);
+    const trimmedDescription = (description || "").trim();
+
+    if (!trimmedDescription) {
+        return "Review content cannot be empty.";
+    }
+
+    if (!Number.isFinite(numericRating) || numericRating < 1 || numericRating > 10) {
+        return "Rating must be between 1 and 10.";
+    }
+
+    return null;
+}
+
 async function updateMovieAverage(movieId) {
     const reviews = await Review.findReviewsByMovieId(movieId);
     let averageRating = null;
@@ -46,7 +61,7 @@ exports.moviereviews = async (req,res) => {
     const movieTrailer = hasSavedTrailer
         ? formatTrailer(savedTrailer)
         : formatTrailer(await getMovieTrailer(movieData.title, id));
-    const stats = await StatsModel.incrementGlobalViews(id);
+    const stats = await StatsModel.incrementGlobalViews(id, movieData.title);
         // Update Specific User Views (Only if logged in)
         if (req.session.isLoggedIn && req.session.currentUser) {
             await StatsModel.incrementUserViews(req.session.currentUser.id, id);
@@ -76,12 +91,17 @@ exports.postReview = async (req, res) => {
         }
         const id = req.params.id; // Get ID from URL
         const { rating, description } = req.body; // Get data from EJS form
+        const validationError = validateReviewInput(rating, description);
+
+        if (validationError) {
+            return res.status(400).send(validationError);
+        }
 
         // 1. Create a new review in the Review schema
         await Review.createReview({
             movieId: id,
-            reviewContent: description,
-            rating: rating,
+            reviewContent: description.trim(),
+            rating: Number(rating),
             username: req.session.currentUser.username, 
             userId: req.session.currentUser.id
         });
@@ -131,6 +151,11 @@ exports.updateReview = async (req, res) => {
     try {
         const { reviewId, movieId } = req.params;
         const { rating, description } = req.body;
+        const validationError = validateReviewInput(rating, description);
+
+        if (validationError) {
+            return res.status(400).send(validationError);
+        }
 
         // 1. Find the review
        const review = await Review.findReviewById(reviewId);
@@ -147,7 +172,10 @@ exports.updateReview = async (req, res) => {
         }
 
         // 3. Update the review since authorization passed
-        await Review.updateReviewById(reviewId, { rating, reviewContent: description });
+        await Review.updateReviewById(reviewId, {
+            rating: Number(rating),
+            reviewContent: description.trim()
+        });
         await updateMovieAverage(movieId); // update the average rating as well
 
         res.redirect(`/movie-reviews/${movieId}`);

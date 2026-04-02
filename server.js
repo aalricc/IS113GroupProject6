@@ -18,7 +18,7 @@ const { getRecommendedMovies } = require("./data/recommendations");
 const { MovieStats } = require("./models/moviestats-model");
 dotenv.config({ path: "./config.env" });
 app.set("view engine", "ejs");
-app.use(express.static('public'));
+ app.use(express.static('public', { index: false }));
 app.use(express.urlencoded({extended: true}));
 app.use(session({
     secret: process.env.SECRET,

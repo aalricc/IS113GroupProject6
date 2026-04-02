@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 require("../models/moviereviews-model");
 const User = require("../models/user");
 require("../models/watchlist-model");
@@ -49,6 +50,10 @@ async function getTopMovieActivity() {
     for (let stat of viewStats) {
         const row = getMovieRow(movieMap, stat.movieId);
         row.viewCount = stat.viewCount || 0;
+
+        if (!row.movieTitle && stat.movieTitle) {
+            row.movieTitle = stat.movieTitle;
+        }
     }
 
     for (let entry of watchlistEntries) {
@@ -139,16 +144,27 @@ async function getTopMovieActivity() {
     return top10;
 }
 
+async function renderAdminPage(res, options = {}) {
+    const reviews = await mongoose.models.Review.find();
+    const users = await User.retrieveAll();
+    const topMovieActivity = await getTopMovieActivity();
+
+    res.render("admin", {
+        reviews,
+        users,
+        topMovieActivity,
+        created: options.created || null,
+        updated: options.updated || null,
+        createErrors: options.createErrors || []
+    });
+}
+
 exports.showAdminPage = async (req, res) => {
     try {
-        const reviews = await mongoose.models.Review.find();
-        const users = await User.retrieveAll();
-        const topMovieActivity = await getTopMovieActivity();
-
-        const created = req.query.created || null;
-        const updated = req.query.updated || null;
-
-        res.render("admin", { reviews, users, topMovieActivity, created, updated });
+        await renderAdminPage(res, {
+            created: req.query.created || null,
+            updated: req.query.updated || null
+        });
     } catch (error) {
         console.error("Error occured fetching admin data", error);
         res.status(500).send("Error loading admin page");
@@ -157,12 +173,49 @@ exports.showAdminPage = async (req, res) => {
 
 exports.createUser = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const username = (req.body.username || "").trim();
+        const email = (req.body.email || "").trim();
+        const password = req.body.password || "";
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const createErrors = [];
+
+        if (!username) {
+            createErrors.push("Username cannot be empty");
+        }
+
+        if (username && username.length < 3) {
+            createErrors.push("Username must be at least 3 characters");
+        }
+
+        if (!emailRegex.test(email)) {
+            createErrors.push("Invalid email format");
+        }
+
+        if (!password || password.length < 6) {
+            createErrors.push("Password must be at least 6 characters");
+        }
+
+        const existingUser = await User.findOneUsername(username);
+        const existingEmail = await User.findOneEmail(email);
+
+        if (existingUser) {
+            createErrors.push("Username already exists");
+        }
+
+        if (existingEmail) {
+            createErrors.push("Email already exists");
+        }
+
+        if (createErrors.length > 0) {
+            return await renderAdminPage(res, { createErrors });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         await User.createUser({
             username,
             email,
-            password
+            password: hashedPassword
         });
 
         res.redirect("/admin-page?created=true");

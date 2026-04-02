@@ -122,7 +122,7 @@ exports.showUpdateEmailPage = async (req, res) => {
 };
 
 exports.updateEmail = async (req, res) => {
-    const newEmail = req.body.email.trim();
+    const newEmail = (req.body.email || "").trim();
     let errors = [];
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

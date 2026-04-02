@@ -11,6 +11,14 @@ const movieCacheSchema = new mongoose.Schema({
         type: Array,
         default: []
     },
+    source: {
+        type: String,
+        default: "tmdb"
+    },
+    movieCount: {
+        type: Number,
+        default: 0
+    },
     updatedAt: {
         type: Date,
         default: Date.now
