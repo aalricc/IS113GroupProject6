@@ -129,7 +129,7 @@ exports.deleteReview = async (req,res) => {
         }
 
         // 3. // checks in the backend for security
-        const isOwner = String(review.userId) === String(req.session.currentUser.id);
+        const isOwner = String(review.userId) === String(req.session.currentUser?.id);
         const isAdmin = req.session.isAdmin === true;
 
         if (!isOwner && !isAdmin) {
@@ -164,7 +164,7 @@ exports.updateReview = async (req, res) => {
         }
 
         // 2. Verify permissions (Owner OR Admin)
-        const isOwner = String(review.userId) === String(req.session.currentUser.id);
+        const isOwner = String(review.userId) === String(req.session.currentUser?.id);
         const isAdmin = req.session.isAdmin === true;
 
         if (!isOwner && !isAdmin) {

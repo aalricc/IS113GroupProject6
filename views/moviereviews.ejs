@@ -83,7 +83,7 @@
 </div>
 
 
-   <% if (isLoggedIn) { %>
+   <% if (isLoggedIn && !editId) { %>
     <form action="/movie-reviews/<%= movieData.id %>" method="POST">
         <h3>Submit a Review</h3>
         <label for="rating">Your rating (1-10):</label><br>
@@ -94,7 +94,7 @@
         <br><br>
         <button type="submit">Send Review</button>
     </form>
-<% } else { %>
+<% } else if (!isLoggedIn){ %>
     <div style="background: #eee; padding: 20px; border-radius: 8px; margin-top: 30px; text-align: center;"> <!--If the user is not logged in, he will be prompted to log in. But he can still read the reviews-->
         <p>Want to share your thoughts? <a href="/login">Login</a> to post a review!</p>
     </div>
@@ -106,8 +106,10 @@
     <% movieReviews.forEach(function(review) { %>
         <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
        <div class="review-card">
-        <% if (editId && String(editId) === String(review._id)) { %> <form action="/update-review/<%= review._id %>/<%= movieData.id %>" method="POST"> <input type="number" name="rating" value="<%= review.rating %>" min="1" max="10" required />
-            <br>
+        <% if (editId && String(editId) === String(review._id) && isLoggedIn && currentUser && (String(review.userId) === String(currentUser.id) || isAdmin)) { %> 
+<form action="/update-review/<%= review._id %>/<%= movieData.id %>" method="POST"> 
+    <input type="number" name="rating" value="<%= review.rating %>" min="1" max="10" required />
+    <br>
             <textarea name="description" rows="3" style="width:100%"><%= review.reviewContent %></textarea>
             <br>
             <button type="submit">Save Changes</button>
@@ -137,6 +139,7 @@
     </form>
 <% }} %>
       </div>
+        </div>
     <%}) %>
   <% } else { %>
     <p>No reviews yet. Be the first to post one!</p>
