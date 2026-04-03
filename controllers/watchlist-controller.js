@@ -48,7 +48,7 @@ exports.markWatched = async (req, res) => {
 
     catch (error) {
         console.log(error);
-        res.send("Failed to update movie")
+       return res.send("Failed to update movie")
     }
 
     res.redirect("/watchlist")
@@ -65,7 +65,7 @@ exports.markUnwatched = async (req, res) => {
 
     catch (error) {
         console.log(error);
-        res.send("Failed to update movie")
+        return res.send("Failed to update movie")
     }
 
     res.redirect("/watchlist")
