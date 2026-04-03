@@ -69,7 +69,7 @@ exports.updateUsername = async (req, res) => {
         }
 
         // check if newUsername is same as currentUser username
-        else if (newUsername.trim() === currentUser.username){
+        if (newUsername.trim() === currentUser.username){
             errors.push("Please try a different username")
         }
 
@@ -94,7 +94,7 @@ exports.updateUsername = async (req, res) => {
         return res.render("update-username", {
             user: updatedUser,
             errors: [],
-            success: "Username updated succesfully. Click 'Back to Account' below to return back."
+            success: "Username updated successfully. Click 'Back to Account' below to return back."
         });
     } catch (error) {
         console.log("Update username error: ", error);
@@ -210,6 +210,7 @@ exports.changePassword = async (req, res) => {
 
         if (!currentPassword || !newPassword || !confirmNewPassword) {
             errors.push("All fields are required.");
+            return res.render("change-password", {user, errors, success:null})
         }
 
         const match1 = await bcrypt.compare(currentPassword, user.password);
