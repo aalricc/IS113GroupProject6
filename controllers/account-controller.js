@@ -69,7 +69,7 @@ exports.updateUsername = async (req, res) => {
         }
 
         // check if newUsername is same as currentUser username
-        if (newUsername.trim() === currentUser.username){
+        else if (newUsername.trim() === currentUser.username){
             errors.push("Please try a different username")
         }
 
@@ -81,6 +81,8 @@ exports.updateUsername = async (req, res) => {
             });
         }
 
+        const oldUsername = currentUser.username;
+
         // update username in db
         const updatedUser = await User.findByIdAndUpdate(
             req.session.currentUser.id,
@@ -88,13 +90,19 @@ exports.updateUsername = async (req, res) => {
             {new: true}
         );
 
+        // update watchlist and review entries to use new username
+        await Promise.all([
+            Watchlist.updateMany({ username: oldUsername }, { username: newUsername }),
+            Review.updateMany({ username: oldUsername }, { username: newUsername }),
+        ]);
+
         // update username in session
         req.session.currentUser.username = updatedUser.username;
 
         return res.render("update-username", {
             user: updatedUser,
             errors: [],
-            success: "Username updated successfully. Click 'Back to Account' below to return back."
+            success: "Username updated succesfully. Click 'Back to Account' below to return back."
         });
     } catch (error) {
         console.log("Update username error: ", error);
@@ -131,7 +139,7 @@ exports.updateEmail = async (req, res) => {
         errors.push("Email cannot be empty.");
     }
 
-    if (!emailRegex.test(newEmail)) {
+    else if (!emailRegex.test(newEmail)) {
         errors.push("Invalid email format.");
     }
 
@@ -210,7 +218,7 @@ exports.changePassword = async (req, res) => {
 
         if (!currentPassword || !newPassword || !confirmNewPassword) {
             errors.push("All fields are required.");
-            return res.render("change-password", {user, errors, success:null})
+            return res.render("change-password", { user, errors, success: null });
         }
 
         const match1 = await bcrypt.compare(currentPassword, user.password);

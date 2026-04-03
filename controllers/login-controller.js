@@ -12,6 +12,9 @@ exports.showLoginPage = (req, res) => {
     isLocked: false
     });
 };
+exports.loginGetAttempt = (req, res) => {
+  res.redirect("/login");
+};
 
 exports.loginAttempt = async (req, res) => {
     const usernameEntered = req.body.usernameEntered;
