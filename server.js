@@ -10,15 +10,14 @@ const watchListRoutes = require("./routes/watchlist-routes");
 const moviereviewsRoutes = require("./routes/moviereviews-routes");
 const adminRoutes = require("./routes/admin-routes");
 const searchRoute = require("./routes/search-route");
+const homeRoutes = require("./routes/home-routes");
+
+dotenv.config({ path: "./config.env" });
 
 const app = express();
-const path = require("path");
-const { getPopularMovies, clearPopularMoviesCache } = require("./data/movies");
-const { getRecommendedMovies } = require("./data/recommendations");
-const { MovieStats } = require("./models/moviestats-model");
-dotenv.config({ path: "./config.env" });
+
 app.set("view engine", "ejs");
-app.use(express.static("public", { index: false }));
+app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
@@ -34,80 +33,14 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use("/", homeRoutes);
 app.use("/", loginRoutes);
 app.use("/", registerRoutes);
 app.use("/", accountRoutes);
 app.use("/", moviereviewsRoutes);
 app.use("/", adminRoutes);
-app.use("/watchlist", watchListRoutes);
 app.use("/", searchRoute);
-
-app.get("/index.html", (req, res) => res.redirect("/"));
-
-async function attachUserRatingsToMovies(movies) {
-  const movieIds = movies.map((movie) => String(movie.id));
-  const movieStats = await MovieStats.find({ movieId: { $in: movieIds } });
-  const ratingsByMovieId = {};
-
-  for (let stat of movieStats) {
-    ratingsByMovieId[String(stat.movieId)] = stat.averageRating;
-  }
-
-  for (let movie of movies) {
-    if (
-      Object.prototype.hasOwnProperty.call(ratingsByMovieId, String(movie.id))
-    ) {
-      movie.userRating = ratingsByMovieId[String(movie.id)];
-    } else {
-      movie.userRating = null;
-    }
-  }
-
-  return movies;
-}
-
-async function renderHomePage(req, res) {
-  try {
-    let movies = await getPopularMovies();
-    movies = await attachUserRatingsToMovies(movies);
-    let recommendedMovies = [];
-
-    if (req.session.isLoggedIn && req.session.currentUser) {
-      recommendedMovies = await getRecommendedMovies(
-        req.session.currentUser,
-        movies,
-      );
-    }
-
-    const { getMovieById } = require("./data/movies");
-    const featured1 = await getMovieById(123456789);
-    const featured2 = await getMovieById(987654321);
-    featured1.recommendationScore = 9999;
-    featured2.recommendationScore = 9998;
-
-    recommendedMovies = recommendedMovies.filter(
-      (m) => m.id !== 123456789 && m.id !== 987654321,
-    );
-    recommendedMovies.push(featured1, featured2);
-
-    recommendedMovies.sort((a, b) => {
-      if (b.recommendationScore !== a.recommendationScore) {
-        return b.recommendationScore - a.recommendationScore;
-      }
-      return (b.rating || 0) - (a.rating || 0);
-    });
-
-    recommendedMovies = recommendedMovies.slice(0, 6);
-
-    res.render("home", { movies, recommendedMovies });
-  } catch (error) {
-    console.error("Error loading home page:", error);
-    res.status(500).send("Failed to load home page");
-  }
-}
-
-//Routes
-app.get("/", renderHomePage);
+app.use("/watchlist", watchListRoutes);
 
 async function connectDB() {
   try {
@@ -128,13 +61,3 @@ function startServer() {
 }
 
 connectDB().then(startServer);
-
-app.post("/clear-movie-cache", async (req, res) => {
-  try {
-    await clearPopularMoviesCache();
-    res.redirect("/");
-  } catch (error) {
-    console.log("Error clearing movie cache:", error);
-    res.status(500).send("Failed to clear movie cache");
-  }
-});
