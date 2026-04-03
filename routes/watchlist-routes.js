@@ -5,7 +5,7 @@ const { checkIfLogged } = require("./../middleware/auth-middleware");
 
 const router = express.Router();
 
-router.get("/", watchlistController.showWatchlist);
+router.get("/watchlist", watchlistController.showWatchlist);
 
 router.post("/removeMovie", checkIfLogged, watchlistController.removeMovie);
 router.post("/markWatched", checkIfLogged, watchlistController.markWatched);

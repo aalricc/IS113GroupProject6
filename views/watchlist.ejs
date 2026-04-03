@@ -56,7 +56,7 @@
             <td>
                 <!--If movie has not been watched yet, display the "Mark Watched" button to allow user to mark movie as watched-->
                 <% if (!movie.hasWatched) { %>
-                <form action="/watchlist/markWatched" method="post">
+                <form action="/markWatched" method="post">
                 <input type="hidden" name="movie" value="<%=movie.movieName%>">
                 <button type="submit">Mark Watched</button>
                 <br>
@@ -64,14 +64,14 @@
                 </form>
                 <!-- Else, just display the Remove button to allow user to remove movie from watchlist-->
                 <% } else { %>
-                <form action="/watchlist/markUnwatched" method="post">
+                <form action="/markUnwatched" method="post">
                 <input type="hidden" name="movie" value="<%=movie.movieName%>">
                 <button type="submit">Mark Unwatched</button>
                 <br>
                 <br>
                 </form>
                 <% } %>
-                <form action="/watchlist/removeMovie" method="post">
+                <form action="/removeMovie" method="post">
                 <input type="hidden" name="movie" value="<%=movie.movieName%>">
                 <button type="submit">Remove</button>
                 </form>
