@@ -9,7 +9,7 @@ exports.showWatchlist = async (req, res) => {
              return res.render("watchlist", { isLoggedIn: false, watchList: "", msg: "" })
         }
         else {
-            let watchList = await Watchlist.findWatchlistByID(req.session.currentUser.username); 
+            let watchList = await Watchlist.findWatchlistByUsername(req.session.currentUser.username); 
             res.render("watchlist", { isLoggedIn: true, watchList, msg: "" }); 
         }
     } catch (error) {
@@ -91,11 +91,11 @@ exports.createWatchlist = async (req, res) => {
                 movieId: id
             }
 
-            let movie = await Watchlist.findWatchlistbyIDandName(req.session.currentUser.username, name)
+            let movie = await Watchlist.findWatchlistbyUsernameAndMovieName(req.session.currentUser.username, name)
 
             if (movie) {
                 let msg = "Movie already exists in the watchlist"
-                let watchList = await Watchlist.findWatchlistByID(req.session.currentUser.username)
+                let watchList = await Watchlist.findWatchlistByUsername(req.session.currentUser.username)
                 res.render("watchlist", {  isLoggedIn: true, msg, watchList })
 
             }
@@ -104,7 +104,7 @@ exports.createWatchlist = async (req, res) => {
                 let result = await Watchlist.createWatchlist(newMovie);
                 console.log("Successfully added movie to watchlist")
                 let msg = "Movie added to watchlist."
-                let watchList = await Watchlist.findWatchlistByID(req.session.currentUser.username)
+                let watchList = await Watchlist.findWatchlistByUsername(req.session.currentUser.username)
 
                 res.render("watchlist", { isLoggedIn: true, msg, watchList })
 
