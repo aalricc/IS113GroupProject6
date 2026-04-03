@@ -5,9 +5,11 @@ A full-stack web application for browsing movies, searching TMDB, maintaining a 
 ## Features
 - **Authentication & Sessions**: Register, login, logout (session-based)
 - **Movie Browsing**: Home page shows popular movies (cached)
+- **Recommendations**: Personalised movie suggestions using linear regression over genre engagement (search history, watchlist, view counts)
 - **Search + Search History**: Search TMDB and (when logged in) store/clear search history
 - **Watchlist**: Add movies, mark watched/unwatched, remove items
 - **Movie Reviews**: Post, update, and delete reviews (login required)
+- **Account Management**: Update username, update email, change password, delete account (with cascade deletion)
 - **Admin Dashboard**: Manage users and reviews, plus activity-based stats (admin-only)
 
 ## Tech Stack
@@ -43,6 +45,8 @@ IS113GroupProject6/
 │   ├── user.js
 │   └── watchlist-model.js
 ├── public/
+│   ├── css/
+│   │   └── style.css
 │   └── index.html
 ├── routes/                      # express routes
 │   ├── account-routes.js
@@ -53,14 +57,18 @@ IS113GroupProject6/
 │   ├── search-route.js
 │   └── watchlist-routes.js
 ├── views/                       # EJS templates
-│   ├── home.ejs
-│   ├── search.ejs
-│   ├── watchlist.ejs
-│   ├── moviereviews.ejs
 │   ├── account.ejs
 │   ├── admin.ejs
+│   ├── change-password.ejs
+│   ├── delete-account.ejs
+│   ├── home.ejs
 │   ├── login.ejs
-│   └── register.ejs
+│   ├── moviereviews.ejs
+│   ├── register.ejs
+│   ├── search.ejs
+│   ├── update-email.ejs
+│   ├── update-username.ejs
+│   └── watchlist.ejs
 ├── server.js                    # main express app
 ├── package.json
 └── config.env                   # environment variables (see below)
@@ -111,6 +119,7 @@ http://localhost:8000
 3. **Create an account**: Register at `/register`, then log in at `/login`
 4. **Watchlist**: Manage your watchlist at `/watchlist`
 5. **Reviews**: Open a movie page at `/movie-reviews/:id` and post a review when logged in
+6. **Account settings**: From `/account`, update your username, email, password, or delete your account
 
 ### For Admins
 - Visit **`/admin-page`** (requires an authenticated user with `role: "admin"`)
@@ -139,6 +148,16 @@ http://localhost:8000
 - `POST /watchlist/removeMovie` - Remove a movie
 - `POST /watchlist/markWatched` - Mark watched
 - `POST /watchlist/markUnwatched` - Mark unwatched
+
+### Account Management (login required)
+- `GET /account/update-username` - Update username page
+- `POST /account/update-username` - Update username
+- `GET /account/update-email` - Update email page
+- `POST /account/update-email` - Update email
+- `GET /account/change-password` - Change password page
+- `POST /account/change-password` - Change password
+- `GET /account/delete-account` - Delete account page
+- `POST /account/delete-account` - Delete account (cascades: removes user, reviews, search history, watchlist)
 
 ### Movie Reviews
 - `GET /movie-reviews/:id` - Movie reviews page
