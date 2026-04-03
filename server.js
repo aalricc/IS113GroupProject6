@@ -1,30 +1,32 @@
-const express = require('express');
-const session = require('express-session');
+const express = require("express");
+const session = require("express-session");
 const dotenv = require("dotenv");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const loginRoutes = require("./routes/login-routes");
 const registerRoutes = require("./routes/register-routes");
 const accountRoutes = require("./routes/account-routes");
 const watchListRoutes = require("./routes/watchlist-routes");
 const moviereviewsRoutes = require("./routes/moviereviews-routes");
-const adminRoutes = require('./routes/admin-routes');
+const adminRoutes = require("./routes/admin-routes");
 const searchRoute = require("./routes/search-route");
 
 const app = express();
-const path = require('path');
+const path = require("path");
 const { getPopularMovies, clearPopularMoviesCache } = require("./data/movies");
 const { getRecommendedMovies } = require("./data/recommendations");
 const { MovieStats } = require("./models/moviestats-model");
 dotenv.config({ path: "./config.env" });
 app.set("view engine", "ejs");
- app.use(express.static('public', { index: false }));
-app.use(express.urlencoded({extended: true}));
-app.use(session({
+app.use(express.static("public", { index: false }));
+app.use(express.urlencoded({ extended: true }));
+app.use(
+  session({
     secret: process.env.SECRET,
     resave: false,
-    saveUninitialized: false
-}));
+    saveUninitialized: false,
+  }),
+);
 app.use((req, res, next) => {
   res.locals.isLoggedIn = req.session.isLoggedIn || false;
   res.locals.currentUser = req.session.currentUser || null;
@@ -32,16 +34,16 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/", loginRoutes);  
+app.use("/", loginRoutes);
 app.use("/", registerRoutes);
 app.use("/", accountRoutes);
 app.use("/", moviereviewsRoutes);
-app.use('/', adminRoutes);
-app.use('/watchlist', watchListRoutes);
-app.use('/', searchRoute);
+app.use("/", adminRoutes);
+app.use("/watchlist", watchListRoutes);
+app.use("/", searchRoute);
 
 async function attachUserRatingsToMovies(movies) {
-  const movieIds = movies.map(movie => String(movie.id));
+  const movieIds = movies.map((movie) => String(movie.id));
   const movieStats = await MovieStats.find({ movieId: { $in: movieIds } });
   const ratingsByMovieId = {};
 
@@ -50,7 +52,9 @@ async function attachUserRatingsToMovies(movies) {
   }
 
   for (let movie of movies) {
-    if (Object.prototype.hasOwnProperty.call(ratingsByMovieId, String(movie.id))) {
+    if (
+      Object.prototype.hasOwnProperty.call(ratingsByMovieId, String(movie.id))
+    ) {
       movie.userRating = ratingsByMovieId[String(movie.id)];
     } else {
       movie.userRating = null;
@@ -67,8 +71,31 @@ async function renderHomePage(req, res) {
     let recommendedMovies = [];
 
     if (req.session.isLoggedIn && req.session.currentUser) {
-      recommendedMovies = await getRecommendedMovies(req.session.currentUser, movies);
+      recommendedMovies = await getRecommendedMovies(
+        req.session.currentUser,
+        movies,
+      );
     }
+
+    const { getMovieById } = require("./data/movies");
+    const featured1 = await getMovieById(123456789);
+    const featured2 = await getMovieById(987654321);
+    featured1.recommendationScore = 9999;
+    featured2.recommendationScore = 9998;
+
+    recommendedMovies = recommendedMovies.filter(
+      (m) => m.id !== 123456789 && m.id !== 987654321,
+    );
+    recommendedMovies.push(featured1, featured2);
+
+    recommendedMovies.sort((a, b) => {
+      if (b.recommendationScore !== a.recommendationScore) {
+        return b.recommendationScore - a.recommendationScore;
+      }
+      return (b.rating || 0) - (a.rating || 0);
+    });
+
+    recommendedMovies = recommendedMovies.slice(0, 6);
 
     res.render("home", { movies, recommendedMovies });
   } catch (error) {
@@ -81,15 +108,14 @@ async function renderHomePage(req, res) {
 app.get("/", renderHomePage);
 
 async function connectDB() {
-    try {
-        await mongoose.connect(process.env.DB);
-        console.log("MongoDB connected successfully");
-    } catch (error) {
-        console.error("MongoDB connection failed:", error.message);
-        process.exit(1);
-    }
-};
-
+  try {
+    await mongoose.connect(process.env.DB);
+    console.log("MongoDB connected successfully");
+  } catch (error) {
+    console.error("MongoDB connection failed:", error.message);
+    process.exit(1);
+  }
+}
 
 function startServer() {
   const hostname = "localhost";
