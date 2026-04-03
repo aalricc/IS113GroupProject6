@@ -81,12 +81,20 @@ exports.updateUsername = async (req, res) => {
             });
         }
 
+        const oldUsername = currentUser.username;
+
         // update username in db
         const updatedUser = await User.findByIdAndUpdate(
             req.session.currentUser.id,
             {username: newUsername},
             {new: true}
         );
+
+        // update watchlist and review entries to use new username
+        await Promise.all([
+            Watchlist.updateMany({ username: oldUsername }, { username: newUsername }),
+            Review.updateMany({ username: oldUsername }, { username: newUsername }),
+        ]);
 
         // update username in session
         req.session.currentUser.username = updatedUser.username;
