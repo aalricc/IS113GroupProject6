@@ -5,6 +5,9 @@ const MAX_LOGIN_ATTEMPTS = 3;
 const LOCK_TIME_MS = 60 * 1000;
 
 exports.showLoginPage = (req, res) => {
+  if (req.session.isLoggedIn) {
+    return res.redirect("/home");
+  }
   res.render("login", {
     falseLogin: null,
     isLoggedIn: req.session.isLoggedIn || false,
