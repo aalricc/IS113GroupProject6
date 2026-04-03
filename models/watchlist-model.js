@@ -29,6 +29,8 @@ const watchlistSchema = new mongoose.Schema({
     
 });
 
+watchlistSchema.index({ username: 1, movieId: 1 }, { unique: true });
+
 const Watchlist = mongoose.models.Watchlist || mongoose.model("Watchlist", watchlistSchema);
 
 //Methods here

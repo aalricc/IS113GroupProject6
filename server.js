@@ -42,6 +42,7 @@ app.use("/", adminRoutes);
 app.use("/", searchRoute);
 app.use("/", watchListRoutes);
 
+
 async function connectDB() {
   try {
     await mongoose.connect(process.env.DB);
