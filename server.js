@@ -42,6 +42,8 @@ app.use("/", adminRoutes);
 app.use("/watchlist", watchListRoutes);
 app.use("/", searchRoute);
 
+app.get("/index.html", (req, res) => res.redirect("/"));
+
 async function attachUserRatingsToMovies(movies) {
   const movieIds = movies.map((movie) => String(movie.id));
   const movieStats = await MovieStats.find({ movieId: { $in: movieIds } });
