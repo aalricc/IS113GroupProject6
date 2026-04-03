@@ -90,7 +90,7 @@ SECRET=JQBDVHDEGIUFGQUYF3872471648291JDNJN*&@T&;iuehfgiuqfgefuigdhsbfifh
 DB=mongodb+srv://lucasleow2025_db_user:x3kAH8gbmTu5tWZl@main.a7dfili.mongodb.net/is113project?retryWrites=true&w=majority
 
 # TMDB API key
-TMDB_API_KEY=replace_me_with_your_key
+TMDB_API_KEY=1a5d529ccb58f5db5d1c537364032cd0
 ```
 
 4. **Start the application**
