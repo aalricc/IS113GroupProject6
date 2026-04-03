@@ -25,6 +25,7 @@ IS113GroupProject6/
 ├── controllers/                 # request handlers / page logic
 │   ├── account-controller.js
 │   ├── admin-controller.js
+│   ├── home-controller.js
 │   ├── login-controller.js
 │   ├── moviereviews-controller.js
 │   ├── register-controller.js
@@ -51,6 +52,7 @@ IS113GroupProject6/
 ├── routes/                      # express routes
 │   ├── account-routes.js
 │   ├── admin-routes.js
+│   ├── home-routes.js
 │   ├── login-routes.js
 │   ├── moviereviews-routes.js
 │   ├── register-routes.js
@@ -232,3 +234,4 @@ http://localhost:8000
 - youtubeKey: String (required)
 - createdAt: Date (auto via timestamps)
 - updatedAt: Date (auto via timestamps)
+
