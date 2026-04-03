@@ -115,6 +115,10 @@ exports.createWatchlist = async (req, res) => {
     }
 
     catch (error) {
+        if (error.code === 11000) {
+            let watchList = await Watchlist.findWatchlistByUsername(req.session.currentUser.username);
+            return res.render("watchlist", { isLoggedIn: true, msg: "Movie already exists in the watchlist", watchList });
+        }
         console.log("Error adding movie to watchlist", error);
         res.send("Error adding movie to watchlist");
     }

@@ -109,6 +109,7 @@ async function renderHomePage(req, res) {
 //Routes
 app.get("/", renderHomePage);
 
+
 async function connectDB() {
   try {
     await mongoose.connect(process.env.DB);
