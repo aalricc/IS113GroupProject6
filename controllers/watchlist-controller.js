@@ -42,8 +42,7 @@ exports.markWatched = async (req, res) => {
     const movie_name = req.body.movie
 
     try {
-        let updatedMovie = await Watchlist.markAsWatched(req.session.currentUser.username, movie_name) 
-        console.log(updatedMovie)
+       await Watchlist.markAsWatched(req.session.currentUser.username, movie_name) 
     }
 
     catch (error) {
@@ -59,8 +58,7 @@ exports.markUnwatched = async (req, res) => {
     const movie_name = req.body.movie
 
     try {
-        let updatedMovie = await Watchlist.markAsUnwatched(req.session.currentUser.username, movie_name) 
-        console.log(updatedMovie)
+        await Watchlist.markAsUnwatched(req.session.currentUser.username, movie_name) 
     }
 
     catch (error) {
