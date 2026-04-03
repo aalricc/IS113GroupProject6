@@ -33,12 +33,12 @@ const Watchlist = mongoose.models.Watchlist || mongoose.model("Watchlist", watch
 
 //Methods here
 
-exports.findWatchlistByID = function(username) {
+exports.findWatchlistByUsername = function(username) {
     return Watchlist.find({username: username})
 }
 
 
-exports.findWatchlistbyIDandName = function(username, movieName) {
+exports.findWatchlistbyUsernameAndMovieName = function(username, movieName) {
     return Watchlist.findOne( {
         username: username, 
         movieName: movieName
