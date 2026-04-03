@@ -265,12 +265,21 @@ exports.updateUser = async (req, res) => {
     try {
         const id = req.params.id;
         const { username, email } = req.body;
+        const oldUser = await User.findById(id);
+        const oldUsername = oldUser.username;
 
-        await User.findByIdAndUpdate(
-            id,
-            { username, email },
-            { runValidators: true }
-        );
+        
+
+        await User.findByIdAndUpdate(id, { username, email }, { runValidators: true });
+
+        if (oldUsername !== username) {
+            const Review = mongoose.model("Review");
+            const Watchlist = mongoose.model("Watchlist");
+            await Promise.all([
+                Watchlist.updateMany({ username: oldUsername }, { username }),
+                Review.updateMany({ username: oldUsername }, { username }),
+            ]);
+        }
         res.redirect("/admin-page?updated=true");
     } catch (error) {
         console.error("Error updating user", error);
