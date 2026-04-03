@@ -5,7 +5,7 @@ const {
   clearMovieCache,
 } = require("../controllers/home-controller");
 
-router.get("/", renderHomePage);
+router.get("/home", renderHomePage);
 router.post("/clear-movie-cache", clearMovieCache);
 
 module.exports = router;

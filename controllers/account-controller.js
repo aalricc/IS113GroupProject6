@@ -1,316 +1,321 @@
 const User = require(".././models/user");
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 const { SearchHistory } = require("../models/searchHistory-model");
 const { Review } = require("../models/moviereviews-model");
 const { Watchlist } = require("../models/watchlist-model");
 
 // read portion
-exports.showAccountPage = async (req, res)=>{
-    try {
-        const user = await User.findById(req.session.currentUser.id);
+exports.showAccountPage = async (req, res) => {
+  try {
+    const user = await User.findById(req.session.currentUser.id);
 
-        if (!user) {
-            return res.redirect("/login");
-        }
-
-        res.render('account', {
-            user,
-            isAdmin: user.role === 'admin'
-        });
-    } catch (error) {
-        console.log("Account page error:", error);
-        res.status(500).send("Server error");
+    if (!user) {
+      return res.redirect("/login");
     }
+
+    res.render("account", {
+      user,
+      isAdmin: user.role === "admin",
+    });
+  } catch (error) {
+    console.log("Account page error:", error);
+    res.status(500).send("Server error");
+  }
 };
 
 exports.showUpdateUsernamePage = async (req, res) => {
-    try {
-        const user = await User.findById(req.session.currentUser.id);
+  try {
+    const user = await User.findById(req.session.currentUser.id);
 
-        if (!user) {
-            return res.redirect("/login");
-        }
-
-        res.render("update-username", {
-            user,
-            errors: [],
-            success: null
-        });
-    } catch (error) {
-        console.log("Show update username page error: ", error);
-        res.status(500).send("Server error");
+    if (!user) {
+      return res.redirect("/login");
     }
+
+    res.render("update-username", {
+      user,
+      errors: [],
+      success: null,
+    });
+  } catch (error) {
+    console.log("Show update username page error: ", error);
+    res.status(500).send("Server error");
+  }
 };
 
 exports.updateUsername = async (req, res) => {
-    const newUsername = req.body.username;
-    let errors = [];
+  const newUsername = req.body.username;
+  let errors = [];
 
-    if (!newUsername || newUsername.trim() === "") {
-        errors.push("Username cannot be empty");
+  if (!newUsername || newUsername.trim() === "") {
+    errors.push("Username cannot be empty");
+  }
+
+  if (newUsername && newUsername.length < 3) {
+    errors.push("Username must be at least 3 characters");
+  }
+
+  try {
+    const currentUser = await User.findById(req.session.currentUser.id);
+
+    if (!currentUser) {
+      return res.redirect("/login");
     }
 
-    if (newUsername && newUsername.length < 3) {
-        errors.push("Username must be at least 3 characters");
+    const existingUser = await User.findOneUsername(newUsername);
+
+    // check if newUsername exists in the database
+    if (existingUser && String(existingUser._id) !== String(currentUser._id)) {
+      errors.push("Username already exists, try another one.");
     }
 
-    try {
-        const currentUser = await User.findById(req.session.currentUser.id);
-
-        if (!currentUser) {
-            return res.redirect("/login");
-        }
-
-        const existingUser = await User.findOneUsername(newUsername);
-
-        // check if newUsername exists in the database
-        if (existingUser && String(existingUser._id) !== String(currentUser._id)){
-            errors.push("Username already exists, try another one.");
-        }
-
-        // check if newUsername is same as currentUser username
-        else if (newUsername.trim() === currentUser.username){
-            errors.push("Please try a different username")
-        }
-
-        if (errors.length > 0) {
-            return res.render("update-username", {
-                errors,
-                user: currentUser,
-                success: null
-            });
-        }
-
-        const oldUsername = currentUser.username;
-
-        // update username in db
-        const updatedUser = await User.findByIdAndUpdate(
-            req.session.currentUser.id,
-            {username: newUsername},
-            {new: true}
-        );
-
-        // update watchlist and review entries to use new username
-        await Promise.all([
-            Watchlist.updateMany({ username: oldUsername }, { username: newUsername }),
-            Review.updateMany({ username: oldUsername }, { username: newUsername }),
-        ]);
-
-        // update username in session
-        req.session.currentUser.username = updatedUser.username;
-
-        return res.render("update-username", {
-            user: updatedUser,
-            errors: [],
-            success: "Username updated succesfully. Click 'Back to Account' below to return back."
-        });
-    } catch (error) {
-        console.log("Update username error: ", error);
-        res.status(500).send("Server Error");
+    // check if newUsername is same as currentUser username
+    else if (newUsername.trim() === currentUser.username) {
+      errors.push("Please try a different username");
     }
+
+    if (errors.length > 0) {
+      return res.render("update-username", {
+        errors,
+        user: currentUser,
+        success: null,
+      });
+    }
+
+    const oldUsername = currentUser.username;
+
+    // update username in db
+    const updatedUser = await User.findByIdAndUpdate(
+      req.session.currentUser.id,
+      { username: newUsername },
+      { new: true },
+    );
+
+    // update watchlist and review entries to use new username
+    await Promise.all([
+      Watchlist.updateMany(
+        { username: oldUsername },
+        { username: newUsername },
+      ),
+      Review.updateMany({ username: oldUsername }, { username: newUsername }),
+    ]);
+
+    // update username in session
+    req.session.currentUser.username = updatedUser.username;
+
+    return res.render("update-username", {
+      user: updatedUser,
+      errors: [],
+      success:
+        "Username updated succesfully. Click 'Back to Account' below to return back.",
+    });
+  } catch (error) {
+    console.log("Update username error: ", error);
+    res.status(500).send("Server Error");
+  }
 };
 
 exports.showUpdateEmailPage = async (req, res) => {
-    try {
-        const user = await User.findById(req.session.currentUser.id);
+  try {
+    const user = await User.findById(req.session.currentUser.id);
 
-        if (!user) {
-            return res.redirect("/login");
-        }
-
-        return res.render("update-email", {
-            user,
-            errors: [],
-            success: null
-        });
-    } catch (error) {
-        console.log("Show update email page error:", error);
-        return res.status(500).send("Server error");
+    if (!user) {
+      return res.redirect("/login");
     }
+
+    return res.render("update-email", {
+      user,
+      errors: [],
+      success: null,
+    });
+  } catch (error) {
+    console.log("Show update email page error:", error);
+    return res.status(500).send("Server error");
+  }
 };
 
 exports.updateEmail = async (req, res) => {
-    const newEmail = (req.body.email || "").trim();
-    let errors = [];
+  const newEmail = (req.body.email || "").trim();
+  let errors = [];
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!newEmail || newEmail === "") {
-        errors.push("Email cannot be empty.");
+  if (!newEmail || newEmail === "") {
+    errors.push("Email cannot be empty.");
+  } else if (!emailRegex.test(newEmail)) {
+    errors.push("Invalid email format.");
+  }
+
+  try {
+    const currentUser = await User.findById(req.session.currentUser.id);
+
+    if (!currentUser) {
+      return res.redirect("/login");
     }
 
-    else if (!emailRegex.test(newEmail)) {
-        errors.push("Invalid email format.");
+    const existingUser = await User.findOneEmail(newEmail);
+
+    if (newEmail === currentUser.email) {
+      errors.push("Please try a different email.");
+    } else if (
+      existingUser &&
+      String(existingUser.id) !== String(currentUser.id)
+    ) {
+      errors.push("Email already exists, try another one.");
     }
 
-    try {
-        const currentUser = await User.findById(req.session.currentUser.id);
-
-        if (!currentUser) {
-            return res.redirect("/login");
-        }
-
-        const existingUser = await User.findOneEmail(newEmail);
-
-        if (newEmail === currentUser.email) {
-            errors.push("Please try a different email.");
-        } else if (existingUser && String(existingUser.id) !== String(currentUser.id)) {
-            errors.push("Email already exists, try another one.");
-        }
-
-        if (errors.length > 0) {
-            return res.render("update-email", {
-                user: currentUser,
-                errors,
-                success: null
-            });
-        }
-
-        const updatedUser = await User.findByIdAndUpdate(
-            req.session.currentUser.id,
-            { email: newEmail },
-            { new: true }
-        );
-
-        return res.render("update-email", {
-            user: updatedUser,
-            errors: [],
-            success: "Email updated successfully."
-        });
-    } catch (error) {
-        console.log("Update email error:", error);
-        return res.status(500).send("Server error");
+    if (errors.length > 0) {
+      return res.render("update-email", {
+        user: currentUser,
+        errors,
+        success: null,
+      });
     }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.session.currentUser.id,
+      { email: newEmail },
+      { new: true },
+    );
+
+    return res.render("update-email", {
+      user: updatedUser,
+      errors: [],
+      success: "Email updated successfully.",
+    });
+  } catch (error) {
+    console.log("Update email error:", error);
+    return res.status(500).send("Server error");
+  }
 };
 
-exports.showChangePasswordPage = async(req, res) => {
-    try{
-        const user = await User.findById(req.session.currentUser.id);
+exports.showChangePasswordPage = async (req, res) => {
+  try {
+    const user = await User.findById(req.session.currentUser.id);
 
-        if (!user) {
-            return res.redirect("/login");
-        }
-
-        return res.render("change-password", {
-            user,
-            errors: [],
-            success: null
-        });
-    } catch (error) {
-        console.log("Show change password page error:", error);
-        return res.status(500).send("Server error");
+    if (!user) {
+      return res.redirect("/login");
     }
+
+    return res.render("change-password", {
+      user,
+      errors: [],
+      success: null,
+    });
+  } catch (error) {
+    console.log("Show change password page error:", error);
+    return res.status(500).send("Server error");
+  }
 };
 
 exports.changePassword = async (req, res) => {
-    const currentPassword = req.body.currentPassword;
-    const newPassword = req.body.newPassword;
-    const confirmNewPassword = req.body.confirmNewPassword;
+  const currentPassword = req.body.currentPassword;
+  const newPassword = req.body.newPassword;
+  const confirmNewPassword = req.body.confirmNewPassword;
 
-    let errors = [];
+  let errors = [];
 
-    try {
-        const user = await User.findById(req.session.currentUser.id);
+  try {
+    const user = await User.findById(req.session.currentUser.id);
 
-        if (!user) {
-            return res.redirect("/login");
-        }
-
-        if (!currentPassword || !newPassword || !confirmNewPassword) {
-            errors.push("All fields are required.");
-            return res.render("change-password", { user, errors, success: null });
-        }
-
-        const match1 = await bcrypt.compare(currentPassword, user.password);
-
-        if (!match1) {
-            errors.push("Current password is incorrect.");}
-
-        if (newPassword.length < 6) {
-            errors.push("New password must be at least 6 characters.");
-        }
-
-        if (newPassword !== confirmNewPassword) {
-            errors.push("New passwords do not match.");
-        }
-
-        const match2 = await bcrypt.compare(newPassword, user.password);
-
-
-        if (match2) {
-            errors.push("Please choose a different password.");
-        }
-
-        if (errors.length > 0) {
-            return res.render("change-password", {
-                user,
-                errors,
-                success: null
-            });
-        }
-
-        // update password in db
-        user.password = await bcrypt.hash(newPassword, 10);
-        await user.save();
-        return res.render("change-password", {
-            user,
-            errors: [],
-            success: "Password updated successfully."
-        });    
-    } catch (error) {
-        console.log("Change Password error: ", error);
-        return res.status(500).send("Server Error");
+    if (!user) {
+      return res.redirect("/login");
     }
-    };
+
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      errors.push("All fields are required.");
+      return res.render("change-password", { user, errors, success: null });
+    }
+
+    const match1 = await bcrypt.compare(currentPassword, user.password);
+
+    if (!match1) {
+      errors.push("Current password is incorrect.");
+    }
+
+    if (newPassword.length < 6) {
+      errors.push("New password must be at least 6 characters.");
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      errors.push("New passwords do not match.");
+    }
+
+    const match2 = await bcrypt.compare(newPassword, user.password);
+
+    if (match2) {
+      errors.push("Please choose a different password.");
+    }
+
+    if (errors.length > 0) {
+      return res.render("change-password", {
+        user,
+        errors,
+        success: null,
+      });
+    }
+
+    // update password in db
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+    return res.render("change-password", {
+      user,
+      errors: [],
+      success: "Password updated successfully.",
+    });
+  } catch (error) {
+    console.log("Change Password error: ", error);
+    return res.status(500).send("Server Error");
+  }
+};
 
 exports.showDeleteAccountPage = async (req, res) => {
-    try {
-        const user = await User.findById(req.session.currentUser.id);
+  try {
+    const user = await User.findById(req.session.currentUser.id);
 
-        if (!user) {
-            return res.redirect("/login");
-        }
-
-        return res.render("delete-account", {
-            user
-        });
-    } catch (error) {
-        console.log("Show delete account page error:", error);
-        return res.status(500).send("Server error");
+    if (!user) {
+      return res.redirect("/login");
     }
+
+    return res.render("delete-account", {
+      user,
+    });
+  } catch (error) {
+    console.log("Show delete account page error:", error);
+    return res.status(500).send("Server error");
+  }
 };
 
 exports.deleteAccount = async (req, res) => {
-    try {
-        const userId = req.session.currentUser.id;
-        const username = req.session.currentUser.username; // needed for watchlist lookup
+  try {
+    const userId = req.session.currentUser.id;
+    const username = req.session.currentUser.username; // needed for watchlist lookup
 
-        const user = await User.findById(userId);
+    const user = await User.findById(userId);
 
-        if (!user) {
-            return res.redirect("/login");
-        }
-
-        // Delete all related data in parallel
-        await Promise.all([
-            Review.deleteMany({ userId: userId }),
-            SearchHistory.deleteMany({ userId: userId }),
-            Watchlist.deleteMany({ username: username }),
-            User.findByIdAndDelete(userId),
-        ]);
-
-        // Destroy session
-        req.session.destroy((err) => {
-            if (err) {
-                console.log("Session destroy error:", err);
-                return res.status(500).send("Could not log out after deletion");
-            }
-
-            res.clearCookie("connect.sid");
-            return res.redirect("/");
-        });
-    } catch (error) {
-        console.log("Delete account error:", error);
-        return res.status(500).send("Server error");
+    if (!user) {
+      return res.redirect("/login");
     }
+
+    // Delete all related data in parallel
+    await Promise.all([
+      Review.deleteMany({ userId: userId }),
+      SearchHistory.deleteMany({ userId: userId }),
+      Watchlist.deleteMany({ username: username }),
+      User.findByIdAndDelete(userId),
+    ]);
+
+    // Destroy session
+    req.session.destroy((err) => {
+      if (err) {
+        console.log("Session destroy error:", err);
+        return res.status(500).send("Could not log out after deletion");
+      }
+
+      res.clearCookie("connect.sid");
+      return res.redirect("/home");
+    });
+  } catch (error) {
+    console.log("Delete account error:", error);
+    return res.status(500).send("Server error");
+  }
 };
