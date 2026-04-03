@@ -89,7 +89,7 @@ async function getViewGenreCounts(userId, movieGenreMap, excludedMovieIds) {
 
 async function getWatchlistGenreCounts(username, movieGenreMap, excludedMovieIds) {
     const genreCounts = {};
-    const watchlist = await Watchlist.findWatchlistByID(username);
+    const watchlist = await Watchlist.findWatchlistByUsername(username);
 
     for (let movie of watchlist) {
         const genres = await getMovieGenres(movie.movieId, movieGenreMap);
