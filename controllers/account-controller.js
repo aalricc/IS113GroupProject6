@@ -139,7 +139,7 @@ exports.updateEmail = async (req, res) => {
         errors.push("Email cannot be empty.");
     }
 
-    if (!emailRegex.test(newEmail)) {
+    else if (!emailRegex.test(newEmail)) {
         errors.push("Invalid email format.");
     }
 
@@ -218,6 +218,7 @@ exports.changePassword = async (req, res) => {
 
         if (!currentPassword || !newPassword || !confirmNewPassword) {
             errors.push("All fields are required.");
+            return res.render("change-password", { user, errors, success: null });
         }
 
         const match1 = await bcrypt.compare(currentPassword, user.password);
