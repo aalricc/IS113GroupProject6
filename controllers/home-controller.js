@@ -70,7 +70,7 @@ async function renderHomePage(req, res) {
 async function clearMovieCache(req, res) {
   try {
     await clearPopularMoviesCache();
-    res.redirect("/");
+    res.redirect("/home");
   } catch (error) {
     console.log("Error clearing movie cache:", error);
     res.status(500).send("Failed to clear movie cache");

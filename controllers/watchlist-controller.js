@@ -42,8 +42,7 @@ exports.markWatched = async (req, res) => {
     const movie_name = req.body.movie
 
     try {
-        let updatedMovie = await Watchlist.markAsWatched(req.session.currentUser.username, movie_name) 
-        console.log(updatedMovie)
+       await Watchlist.markAsWatched(req.session.currentUser.username, movie_name) 
     }
 
     catch (error) {
@@ -59,8 +58,7 @@ exports.markUnwatched = async (req, res) => {
     const movie_name = req.body.movie
 
     try {
-        let updatedMovie = await Watchlist.markAsUnwatched(req.session.currentUser.username, movie_name) 
-        console.log(updatedMovie)
+        await Watchlist.markAsUnwatched(req.session.currentUser.username, movie_name) 
     }
 
     catch (error) {
@@ -115,6 +113,10 @@ exports.createWatchlist = async (req, res) => {
     }
 
     catch (error) {
+        if (error.code === 11000) {
+            let watchList = await Watchlist.findWatchlistByUsername(req.session.currentUser.username);
+            return res.render("watchlist", { isLoggedIn: true, msg: "Movie already exists in the watchlist", watchList });
+        }
         console.log("Error adding movie to watchlist", error);
         res.send("Error adding movie to watchlist");
     }

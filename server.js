@@ -40,7 +40,8 @@ app.use("/", accountRoutes);
 app.use("/", moviereviewsRoutes);
 app.use("/", adminRoutes);
 app.use("/", searchRoute);
-app.use("/watchlist", watchListRoutes);
+app.use("/", watchListRoutes);
+
 
 async function connectDB() {
   try {

@@ -130,7 +130,7 @@ http://localhost:8000
 ## API / Route Endpoints
 
 ### Home
-- `GET /` - Home page (popular movies + recommendations for logged-in users)
+- `GET /home` - Home page (popular movies + recommendations for logged-in users)
 - `POST /clear-movie-cache` - Clears the cached popular movies (admin UI may call this)
 
 ### Auth

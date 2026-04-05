@@ -8,18 +8,18 @@
 <% if (err) { %>
   <%= err %>
   <br>
-  Go back <a href="/">Home</a>
+  Go back <a href="/home">Home</a>
 <% } else { %>
   <% if (isLoggedIn) { %>
     <div class="topnav">
-      <a class="active" href="/">Home</a>
+      <a class="active" href="/home">Home</a>
       <a href="/watchlist">Watchlist</a>
       <a href="/account">Account</a>
       <a href="/logout">Logout</a>
     </div>
   <% } else { %>
     <div class="topnav">
-      <a class="active" href="/">Home</a>
+      <a class="active" href="/home">Home</a>
       <a href="/watchlist">Watchlist</a>
       <a href="/login">Login</a>
       <a href="/register">Register</a>

@@ -2,12 +2,18 @@ const User = require('.././models/user');
 const bcrypt = require('bcrypt');
 
 exports.showRegisterPage = (req, res) => {
+    if (req.session.isLoggedIn) {
+        return res.redirect("/home");
+    }
     res.render("register", {
         errors: []
     });
 };
 
 exports.registerAttempt = async (req, res) => {
+    if (req.session.isLoggedIn) {
+        return res.redirect("/home");
+    }
     const usernameRegister = req.body.usernameRegister;
     const emailRegister = req.body.emailRegister;
     let passwordRegister = req.body.passwordRegister;
